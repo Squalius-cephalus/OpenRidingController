@@ -1,3 +1,4 @@
+
 import board
 import digitalio
 import neopixel
@@ -29,7 +30,7 @@ right_stirrup_in = AnalogIn(board.GP29)
 
 onboard_led = neopixel.NeoPixel(board.GP16, 1, brightness=0.3, auto_write=True)
 
-
+setup_calibration = False
 class ProfileManager:
     def __init__(self, profiles, pixel):
         self.profiles = profiles
@@ -64,15 +65,15 @@ class ReinsHandler:
         self.right = 0
 
 
-        self.map_range = [0, 127]
+        self.map_range = [0, 64]
         self.highest_left_value = 0
         self.highest_right_value = 0
         self.rein_timer = self.now
         self.reins_pulled = False
         self.reins_lightly_pulled = False
         self.neutral_position = 0
-        self.pulled_threshold = 127
-        self.lighty_pulled_threshold = 80
+        self.pulled_threshold = 60
+        self.lighty_pulled_threshold = 30
 
 
         self.states = {
@@ -83,7 +84,7 @@ class ReinsHandler:
 
     def _read_scaled(self, pin):
 
-        return int(map_range(pin.value, 0, 65520, self.map_range[0], self.map_range[1]))
+        return int(map_range(pin.value, 5000, 65520, self.map_range[0], self.map_range[1]))
 
     def update(self, current_time):
         left = self._read_scaled(self.left_rein_input)
@@ -116,7 +117,7 @@ class ReinsHandler:
             self.highest_right_value = 0
             self.reins_pulled = True
             self.states["BothPulledHard"] = True
-            print(now-self.rein_timer)
+            #print(now-self.rein_timer)
 
         if left <= self.neutral_position and right <= self.neutral_position:
             self.reins_pulled = False
@@ -143,6 +144,12 @@ class StirrupHandler:
         self.right_backward = False
         self.left_timer = 0
         self.right_timer = 0
+        self.dead_zone = 15
+        self.left_offset = 0
+        self.right_offset = 0
+        self.trigger_forward = -50
+        self.trigger_backward = 30
+        self.inverted = True
         self.states = {
     "LeftForwardSlow": False,
     "LeftForwardFast": False,
@@ -159,9 +166,10 @@ class StirrupHandler:
 
 
     def update(self, current_time):
-        self.left = int(map_range(self.left_stirrup_input.value, 0, 65520, -127, 127))
-        self.right = int(map_range(self.right_stirrup_input.value, 0, 65520, -127, 127))
+        self.left = int(map_range(self.left_stirrup_input.value, 0, 65520, -255, 255))-self.left_offset
+        self.right = int(map_range(self.right_stirrup_input.value, 0, 65520, -255, 255))-self.right_offset
         self.now = current_time
+
 
         self.states = {
             "LeftForwardSlow": False,
@@ -177,42 +185,46 @@ class StirrupHandler:
         }
 
 
-        if self.left >= 127 and self.left_forward is False:
+        if self.left <= self.trigger_forward and self.left_forward is False:
             self.left_forward = True
-            if current_time-self.left_timer <= 0.2:
+            if current_time-self.left_timer <= 0.1:
                 self.states["LeftForwardFast"] = True
-            elif current_time-self.left_timer <= 0.5:
+                print(current_time-self.left_timer)
+            elif current_time-self.left_timer <= 0.7:
                 self.states["LeftForwardSlow"] = True
 
 
 
-        if self.right >= 127 and self.right_forward is False:
+        if self.right <= self.trigger_forward and self.right_forward is False:
             self.right_forward = True
-            if current_time-self.right_timer <= 0.2:
+            if current_time-self.right_timer <= 0.1:
                 self.states["RightForwardFast"] = True
-            elif current_time-self.right_timer <= 0.5:
+                print(current_time-self.right_timer)
+            elif current_time-self.right_timer <= 0.7:
                 self.states["RightForwardSlow"] = True
 
-        if self.left <= -120 and self.left_backward is False:
+        if self.left >= self.trigger_backward and self.left_backward is False:
             self.left_backward = True
-            if current_time-self.left_timer <= 0.2:
+            if current_time-self.left_timer <= 0.1:
                 self.states["LeftBackwardFast"] = True
+                print(current_time-self.left_timer)
             elif current_time-self.left_timer <= 0.5:
                 self.states["LeftBackwardSlow"] = True
 
-        if self.right <= -120 and self.right_backward is False:
+        if self.right >= self.trigger_backward and self.right_backward is False:
             self.right_backward = True
-            if current_time-self.right_timer <= 0.2:
+            if current_time-self.right_timer <= 0.1:
+                print(current_time-self.right_timer)
                 self.states["RightBackwardFast"] = True
             elif current_time-self.right_timer <= 0.5:
                 self.states["RightBackwardSlow"] = True
 
-        if self.left == 0:
+        if -self.dead_zone <= self.left <= self.dead_zone:
             self.left_timer = now
             self.left_forward = False
             self.left_backward = False
 
-        if self.right == 0:
+        if -self.dead_zone <= self.right <= self.dead_zone:
             self.right_timer = now
             self.right_forward = False
             self.right_backward = False
@@ -220,12 +232,16 @@ class StirrupHandler:
     def get_states(self):
         return self.states
 
+    def calibrate(self, left_value, right_value):
+        self.left_offset = left_value
+        self.right_offset = right_value
+
 class KeyboardMouseInputManager:
     def __init__(self, profile_json):
         self.kbd = Keyboard(usb_hid.devices)
         self.mouse = Mouse(usb_hid.devices)
         self.buttons = profile_json["Buttons"]
-        self.hold_time = 1
+        self.hold_time = 0.2
         self.hold_timer = 0
         # Track previous state to detect presses
         self.prev_states = {}
@@ -263,7 +279,7 @@ class KeyboardMouseInputManager:
     def update(self, current_states):
 
         combined_rein_values = current_states["Combined"]
-        print(current_states["Combined"])
+        #print(current_states["Combined"])
         self.mouse.move(x=combined_rein_values)
         if combined_rein_values != 0 and self.buttons["ReinHoldMouse"]:
             self.mouse.press(Mouse.LEFT_BUTTON)
@@ -302,14 +318,22 @@ class KeyboardMouseInputManager:
 
                 if action == "Toggle":
                     if active and not prev:
-                        toggled = self.toggle_states.get(state_name, False)
+                        toggled = self.toggle_states.get(keycode, False)
 
                         if not toggled:
                             self.kbd.press(keycode)
-                            self.toggle_states[state_name] = True
+                            self.toggle_states[keycode] = True
                         else:
                             self.kbd.release(keycode)
-                            self.toggle_states[state_name] = False
+                            self.toggle_states[keycode] = False
+
+                if action == "ToggleOff":
+                    if active and not prev:
+
+                        self.kbd.release(keycode)
+                        self.toggle_states[keycode] = False
+
+
 
                 if action == "Hold":
                     if button_name not in self.active_holds:
@@ -335,20 +359,45 @@ keyboard_mouse_handler = KeyboardMouseInputManager(profile_manager.current_profi
 
 
 def calibrate():
-    # THIS DOES NOTHING
+    now = time.monotonic()
+    stirrup_handler.left_offset = 0
+    stirrup_handler.right_offset = 0
+    left_offset = 0
+    right_offset = 0
+
     print("Calibrating...")
-    time.sleep(1)
+    stirrup_handler.update(now)
+    left_offset = left_offset+stirrup_handler.left
+    right_offset = right_offset+stirrup_handler.right
+
+    time.sleep(0.3)
     print("Calibrating...")
-    time.sleep(1)
+    stirrup_handler.update(now)
+    left_offset = left_offset + stirrup_handler.left
+    right_offset = right_offset + stirrup_handler.right
+
+    time.sleep(0.3)
     print("Calibrating...")
-    time.sleep(1)
+    stirrup_handler.update(now)
+    left_offset = left_offset + stirrup_handler.left
+    right_offset = right_offset + stirrup_handler.right
+    left_offset = int(left_offset /3)
+    right_offset = int(right_offset /3)
+    time.sleep(0.3)
+
+    stirrup_handler.calibrate(left_offset, right_offset)
     print("Calibration complete.")
 
 
 
 
 while True:
+
     now = time.monotonic()
+
+    if not setup_calibration:
+        calibrate()
+        setup_calibration = True
 
     if not profile_button.value:
         time.sleep(0.1)
@@ -373,7 +422,12 @@ while True:
     combined = states | states2
     keyboard_mouse_handler.update(combined)
 
-    time.sleep(0.1)
+    #print(stirrup_handler.left, stirrup_handler.right)
+    #print(reins_handler.left, reins_handler.right)
+
+
+
+
 
 
 
