@@ -11,8 +11,6 @@ from hid_gamepad import Gamepad
 from adafruit_hid.keyboard import Keyboard
 from adafruit_hid.keycode import Keycode
 
-#gamepad = Gamepad(usb_hid.devices)
-mouse = Mouse(usb_hid.devices)
 
 
 with open("/profiles.json", "r") as f:
@@ -20,10 +18,9 @@ with open("/profiles.json", "r") as f:
 
 loaded_profiles = data["profiles"]
 
-
-button = digitalio.DigitalInOut(board.GP2)
-button.direction = digitalio.Direction.INPUT
-button.pull = digitalio.Pull.UP
+profile_button = digitalio.DigitalInOut(board.GP2) # Wrong pin! Needs to be in GP15
+profile_button.direction = digitalio.Direction.INPUT
+profile_button.pull = digitalio.Pull.UP
 
 left_rein_in = AnalogIn(board.GP26)
 right_rein_in = AnalogIn(board.GP27)
@@ -49,8 +46,8 @@ class ProfileManager:
 
         print("Active profile:", self.current_profile["name"])
         self.pixel[0] = self.current_profile["color"]
-        keyboard_handler.release_all()
-        keyboard_handler.mode = self.current_profile["mode"]
+        keyboard_mouse_handler.release_all()
+        keyboard_mouse_handler.mode = self.current_profile["mode"]
 
         time.sleep(0.3)
 
@@ -227,8 +224,6 @@ class KeyboardMouseInputManager:
     def __init__(self, profile_json):
         self.kbd = Keyboard(usb_hid.devices)
         self.mouse = Mouse(usb_hid.devices)
-        self.mode = "Keyboard"
-
         self.buttons = profile_json["Buttons"]
         self.hold_time = 1
         self.hold_timer = 0
@@ -237,7 +232,7 @@ class KeyboardMouseInputManager:
         self.toggle_states = {}
         self.active_holds = {}
         self.hold_mousekey = False
-        # Currently only mapping the stirrup!!!
+
         self.state_map = {
             "LeftForwardSlow": "LeftStirrupForwardSlow",
             "LeftForwardFast": "LeftStirrupForwardFast",
@@ -267,10 +262,10 @@ class KeyboardMouseInputManager:
 
     def update(self, current_states):
 
-        combined = current_states["Combined"]
+        combined_rein_values = current_states["Combined"]
         print(current_states["Combined"])
-        self.mouse.move(x=combined)
-        if combined != 0 and self.buttons["ReinHoldMouse"]:
+        self.mouse.move(x=combined_rein_values)
+        if combined_rein_values != 0 and self.buttons["ReinHoldMouse"]:
             self.mouse.press(Mouse.LEFT_BUTTON)
         else:
             self.mouse.release(Mouse.LEFT_BUTTON)
@@ -288,14 +283,23 @@ class KeyboardMouseInputManager:
                 if button_name not in self.buttons:
                     continue
 
-                key_name, action = self.buttons[button_name][:2]
+                mapping = self.buttons[button_name]
+
+                key_name = mapping[0]
+                action = mapping[1]
                 keycode = self._get_keycode(key_name)
 
                 if action == "Tap":
                     self.kbd.press(keycode)
                     self.kbd.release(keycode)
+                if action == "DoubleTap":
+                    self.kbd.press(keycode)
+                    self.kbd.release(keycode)
+                   # Delay could be a good idea! 
+                    self.kbd.press(keycode)
+                    self.kbd.release(keycode)
 
-                # === TOGGLE ===
+
                 if action == "Toggle":
                     if active and not prev:
                         toggled = self.toggle_states.get(state_name, False)
@@ -327,9 +331,8 @@ class KeyboardMouseInputManager:
 profile_manager = ProfileManager(loaded_profiles, onboard_led)
 reins_handler = ReinsHandler(left_rein_in, right_rein_in)
 stirrup_handler = StirrupHandler(left_stirrup_in, right_stirrup_in)
-keyboard_handler = KeyboardMouseInputManager(profile_manager.current_profile)
+keyboard_mouse_handler = KeyboardMouseInputManager(profile_manager.current_profile)
 
-gamepad = Gamepad(usb_hid.devices)
 
 def calibrate():
     # THIS DOES NOTHING
@@ -344,17 +347,14 @@ def calibrate():
 
 
 
-
-
-# --- Main loop ---
 while True:
     now = time.monotonic()
 
-    if not button.value:
+    if not profile_button.value:
         time.sleep(0.1)
         button_held = 0
 
-        while not button.value:
+        while not profile_button.value:
             button_held += 1
             time.sleep(0.01)
 
@@ -367,10 +367,11 @@ while True:
 
     reins_handler.update(now)
     stirrup_handler.update(now)
+
     states = stirrup_handler.get_states()
     states2 = reins_handler.get_states()
     combined = states | states2
-    keyboard_handler.update(combined)
+    keyboard_mouse_handler.update(combined)
 
     time.sleep(0.1)
 
