@@ -1,0 +1,107 @@
+{
+  "profiles": [
+    {
+      "id": 0,
+      "name": "SSO",
+      "color": [174, 50, 236],
+      "mode": "Keyboard",
+      "Buttons": {
+
+      "LeftStirrupForwardSlow": ["s", "Tap", 0.5],
+      "LeftStirrupForwardFast": ["s", "Tap"],
+      "LeftStirrupBackwardSlow": ["w", "Tap"],
+      "LeftStirrupBackwardFast": ["w", "Tap"],
+
+      "RightStirrupForwardSlow": ["s", "Tap"],
+      "RightStirrupForwardFast": ["SPACE", "Tap"],
+      "RightStirrupBackwardSlow": ["s", "Tap"],
+      "RightStirrupBackwardFast": ["w", "Tap"],
+
+      "BothStirrupForward": ["SPACE", "Tap"],
+      "BothStirrupBackward": ["x", "Tap"],
+
+        "StirrupSlowTime": 0.7,
+        "StirrupFastTime": 0.2,
+        "StirrupsBothTime": 0.5,
+
+        "ReinHoldMouse": true,
+        "BothReinPulledSlow": ["S", "Tap"],
+        "BothReinPulledFast": ["x", "Tap", 0.5],
+
+        "Button1": ["a", "Tap"],
+        "Button2": ["b", "Tap"],
+        "Button3": ["c", "Tap"],
+        "Button4": ["d", "Tap"]
+      }
+
+    },
+    {
+      "id": 1,
+      "name": "RDR2",
+      "color": [255, 0, 0],
+      "mode": "Gamepad",
+      "Buttons": {
+
+      "LeftStirrupForwardSlow": ["RB", "Tap", 0.1],
+      "LeftStirrupForwardFast": ["RB", "Tap", 0.1],
+      "LeftStirrupBackwardSlow": ["LTF", "Toggle"],
+      "LeftStirrupBackwardFast": ["LTF", "Toggle"],
+
+      "RightStirrupForwardSlow": ["LT", "Tap", 0.1],
+      "RightStirrupForwardFast": ["RT", "Tap", 0.1],
+      "RightStirrupBackwardSlow": ["RB", "Tap", 0.5],
+      "RightStirrupBackwardFast": ["A", "Tap", 0.1],
+
+      "BothStirrupForward": ["Z", "Tap", 0.5],
+      "BothStirrupBackward": ["D", "Tap", 0.5],
+
+        "StirrupSlowTime": 0.7,
+        "StirrupFastTime": 0.2,
+        "StirrupsBothTime": 0.5,
+
+        "ReinHoldMouse": false,
+        "BothReinPulledSlow": ["RB", "Tap"],
+        "BothReinPulledFast": ["RB", "Tap", 1],
+
+        "Button1": ["A", "Tap", 0.5],
+        "Button2": ["B", "Tap", 0.5],
+        "Button3": ["LT", "Tap", 1],
+        "Button4": ["RT", "Tap", 0.5]
+      }
+
+    },
+    {
+      "id": 2,
+      "name": "TEST",
+      "color": [174, 50, 236],
+      "mode": "Keyboard",
+      "Buttons": {
+
+      "LeftStirrupForwardSlow": ["s", "Tap", 0.5],
+      "LeftStirrupForwardFast": ["s", "Tap"],
+      "LeftStirrupBackwardSlow": ["w", "Tap"],
+      "LeftStirrupBackwardFast": ["w", "Tap"],
+
+      "RightStirrupForwardSlow": ["s", "Tap"],
+      "RightStirrupForwardFast": ["SPACE", "Tap"],
+      "RightStirrupBackwardSlow": ["s", "Tap"],
+      "RightStirrupBackwardFast": ["w", "Tap"],
+
+      "BothStirrupForward": ["SPACE", "Tap"],
+      "BothStirrupBackward": ["x", "Tap"],
+
+        "StirrupSlowTime": 0.7,
+        "StirrupFastTime": 0.2,
+        "StirrupsBothTime": 0.5,
+
+        "ReinHoldMouse": true,
+        "BothReinPulledSlow": ["S", "Tap"],
+        "BothReinPulledFast": ["x", "Tap", 0.5],
+
+        "Button1": ["a", "Tap"],
+        "Button2": ["b", "Tap"],
+        "Button3": ["c", "Tap"],
+        "Button4": ["d", "Tap"]
+      }
+
+  ]}
