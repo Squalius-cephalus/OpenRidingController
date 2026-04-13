@@ -1,0 +1,4 @@
+Adafruit CircuitPython 10.1.4 on 2026-03-09; Waveshare RP2040-Zero with rp2040
+Board ID:waveshare_rp2040_zero
+UID:E6647C74034A9223
+boot.py output:

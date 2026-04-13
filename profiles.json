@@ -2,106 +2,61 @@
   "profiles": [
     {
       "id": 0,
-      "name": "SSO",
-      "color": [174, 50, 236],
-      "mode": "Keyboard",
+      "Name": "SSO",
+      "Color": [174, 50, 236],
+      "Mode": "Keyboard",
       "Buttons": {
 
-      "LeftStirrupForwardSlow": ["s", "Tap", 0.5],
-      "LeftStirrupForwardFast": ["s", "Tap"],
-      "LeftStirrupBackwardSlow": ["w", "Tap"],
-      "LeftStirrupBackwardFast": ["w", "Tap"],
+      "LeftForward": ["Keyboard", "A", "Tap", 0.5],
+      "LeftBackward": ["Keyboard", "B", "Tap", 0.5],
 
-      "RightStirrupForwardSlow": ["s", "Tap"],
-      "RightStirrupForwardFast": ["SPACE", "Tap"],
-      "RightStirrupBackwardSlow": ["s", "Tap"],
-      "RightStirrupBackwardFast": ["w", "Tap"],
+      "RightForward": ["Keyboard", "A", "Tap", 0.5],
+      "RightBackward": ["Keyboard", "C", "Tap", 0.5],
 
-      "BothStirrupForward": ["SPACE", "Tap"],
-      "BothStirrupBackward": ["x", "Tap"],
 
-        "StirrupSlowTime": 0.7,
-        "StirrupFastTime": 0.2,
-        "StirrupsBothTime": 0.5,
+      "BothForward": ["Keyboard", "D", "Tap", 0.5],
+      "BothBackward": ["Keyboard", "E", "Tap", 0.5],
 
-        "ReinHoldMouse": true,
-        "BothReinPulledSlow": ["S", "Tap"],
-        "BothReinPulledFast": ["x", "Tap", 0.5],
+      "ReinHoldMouse": false,
+          "ReinMode": "Mouse",
+      "BothPulled": ["Keyboard", "F", "Tap", 0.5],
+      "BothPulledFar": ["Keyboard", "F", "Tap", 0.5],
 
-        "Button1": ["a", "Tap"],
-        "Button2": ["b", "Tap"],
-        "Button3": ["c", "Tap"],
-        "Button4": ["d", "Tap"]
+
+      "Button1": ["Keyboard", "A", "ReleaseAll", 0.5],
+      "Button2": ["Keyboard", "B", "Toggle", 0.5],
+      "Button3": ["Macro", [["Keyboard", "A", "Tap", 0.5],["Keyboard", "B", "Tap", 0.5],["Keyboard", "C", "Tap", 0.5]]],
+      "Button4": ["Keyboard", "B", "ToggleOff", 0.5]
       }
 
     },
     {
       "id": 1,
-      "name": "RDR2",
-      "color": [255, 0, 0],
-      "mode": "Gamepad",
+      "Name": "RDR2",
+      "Color": [255, 0, 0],
       "Buttons": {
 
-      "LeftStirrupForwardSlow": ["RB", "Tap", 0.1],
-      "LeftStirrupForwardFast": ["RB", "Tap", 0.1],
-      "LeftStirrupBackwardSlow": ["LTF", "Toggle"],
-      "LeftStirrupBackwardFast": ["LTF", "Toggle"],
+      "LeftForward": ["Gamepad", "A", "Tap", 0.5],
+      "LeftBackward": ["Macro", [["Gamepad", "A", "Tap", 0.5],["Analog", "LSY", "ToggleOn", 0.5, -127]]],
 
-      "RightStirrupForwardSlow": ["LT", "Tap", 0.1],
-      "RightStirrupForwardFast": ["RT", "Tap", 0.1],
-      "RightStirrupBackwardSlow": ["RB", "Tap", 0.5],
-      "RightStirrupBackwardFast": ["A", "Tap", 0.1],
+      "RightForward": ["Gamepad", "A", "Tap", 0.5],
+      "RightBackward": ["Gamepad", "A", "Tap", 0.5],
 
-      "BothStirrupForward": ["Z", "Tap", 0.5],
-      "BothStirrupBackward": ["D", "Tap", 0.5],
 
-        "StirrupSlowTime": 0.7,
-        "StirrupFastTime": 0.2,
-        "StirrupsBothTime": 0.5,
+      "BothForward": ["Gamepad", "A", "Tap", 0.5],
+      "BothBackward": ["Gamepad", "A", "Tap", 0.5],
 
-        "ReinHoldMouse": false,
-        "BothReinPulledSlow": ["RB", "Tap"],
-        "BothReinPulledFast": ["RB", "Tap", 1],
+      "ReinHoldMouse": false,
+        "ReinMode": "Analog",
+      "BothPulled": ["Gamepad", "F", "Tap", 0.5],
+      "BothPulledFar": ["Macro", [["Gamepad", "RB", "Tap", 1],["Analog", "LSY", "ToggleOff", 0.5]]],
 
-        "Button1": ["A", "Tap", 0.5],
-        "Button2": ["B", "Tap", 0.5],
-        "Button3": ["LT", "Tap", 1],
-        "Button4": ["RT", "Tap", 0.5]
+
+      "Button1": ["Gamepad", "LSB", "Tap", 1],
+      "Button2": ["Gamepad", "B", "Toggle", 0.5],
+      "Button3": ["Gamepad", "B", "Toggle", 0.5],
+      "Button4": ["Gamepad", "B", "Toggle", 0.5]
       }
 
-    },
-    {
-      "id": 2,
-      "name": "TEST",
-      "color": [174, 50, 236],
-      "mode": "Keyboard",
-      "Buttons": {
-
-      "LeftStirrupForwardSlow": ["s", "Tap", 0.5],
-      "LeftStirrupForwardFast": ["s", "Tap"],
-      "LeftStirrupBackwardSlow": ["w", "Tap"],
-      "LeftStirrupBackwardFast": ["w", "Tap"],
-
-      "RightStirrupForwardSlow": ["s", "Tap"],
-      "RightStirrupForwardFast": ["SPACE", "Tap"],
-      "RightStirrupBackwardSlow": ["s", "Tap"],
-      "RightStirrupBackwardFast": ["w", "Tap"],
-
-      "BothStirrupForward": ["SPACE", "Tap"],
-      "BothStirrupBackward": ["x", "Tap"],
-
-        "StirrupSlowTime": 0.7,
-        "StirrupFastTime": 0.2,
-        "StirrupsBothTime": 0.5,
-
-        "ReinHoldMouse": true,
-        "BothReinPulledSlow": ["S", "Tap"],
-        "BothReinPulledFast": ["x", "Tap", 0.5],
-
-        "Button1": ["a", "Tap"],
-        "Button2": ["b", "Tap"],
-        "Button3": ["c", "Tap"],
-        "Button4": ["d", "Tap"]
-      }
-
+    }
   ]}
