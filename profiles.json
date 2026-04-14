@@ -7,26 +7,32 @@
       "Mode": "Keyboard",
       "Buttons": {
 
-      "LeftForward": ["Keyboard", "A", "Tap", 0.5],
-      "LeftBackward": ["Keyboard", "B", "Tap", 0.5],
-
-      "RightForward": ["Keyboard", "A", "Tap", 0.5],
-      "RightBackward": ["Keyboard", "C", "Tap", 0.5],
-
-
-      "BothForward": ["Keyboard", "D", "Tap", 0.5],
-      "BothBackward": ["Keyboard", "E", "Tap", 0.5],
-
-      "ReinHoldMouse": false,
-          "ReinMode": "Mouse",
-      "BothPulled": ["Keyboard", "F", "Tap", 0.5],
-      "BothPulledFar": ["Keyboard", "F", "Tap", 0.5],
+      "LeftForwardSlow": ["Keyboard", "S", "Tap", 0.5],
+      "LeftBackwardSlow": ["Keyboard", "S", "Tap", 0.5],
+        "LeftForwardFast": ["Keyboard", "W", "Tap", 0.5],
+      "LeftBackwardFast": ["Keyboard", "W", "Tap", 0.5],
 
 
-      "Button1": ["Keyboard", "A", "ReleaseAll", 0.5],
-      "Button2": ["Keyboard", "B", "Toggle", 0.5],
-      "Button3": ["Macro", [["Keyboard", "A", "Tap", 0.5],["Keyboard", "B", "Tap", 0.5],["Keyboard", "C", "Tap", 0.5]]],
-      "Button4": ["Keyboard", "B", "ToggleOff", 0.5]
+      "RightForwardSlow": ["Keyboard", "e", "Tap", 0.5],
+      "RightBackwardSlow": ["Keyboard", "f", "Tap", 0.5],
+        "RightForwardFast": ["Mouse", "LEFT_BUTTON", "Tap", 0.5],
+      "RightBackwardFast": ["MouseMove", "X", "Tap", 100],
+
+
+      "BothForward": ["Keyboard", "SPACE", "Tap", 0.5],
+      "BothBackward": ["MouseButton", "LEFT_MOUSEBUTTON", "Tap", 0.5],
+
+      "ReinHoldMouse": true,
+          "ReinMode": ["Mouse", ["A", "X", 1]],
+      "BothPulled": ["Keyboard", "S", "Tap", 0.5],
+      "BothPulledFar": ["Keyboard", "X", "Tap", 0.5],
+
+
+
+      "Button1": ["MouseMove", "X", "Tap", 0.5, -50],
+      "Button2": ["MouseMove", "X", "Tap", 1, 50],
+      "Button3": ["MouseMove", "Y", "Tap", 0.5, -50],
+      "Button4": ["MouseMove", "Y", "Tap", 1, 50]
       }
 
     },
@@ -36,23 +42,28 @@
       "Color": [255, 0, 0],
       "Buttons": {
 
-      "LeftForward": ["Gamepad", "A", "Tap", 0.5],
-      "LeftBackward": ["Macro", [["Gamepad", "A", "Tap", 0.5],["Analog", "LSY", "ToggleOn", 0.5, -127]]],
+      "LeftForwardSlow": ["Gamepad", "A", "Tap", 0.5],
+      "LeftBackwardSlow": ["Macro", [["Gamepad", "A", "Tap", 0.5],["Analog", "LSY", "ToggleOn", 0.5, -127]]],
+        "LeftForwardFast": ["Gamepad", "A", "Tap", 0.5],
+      "LeftBackwardFast": ["Macro", [["Gamepad", "A", "Tap", 0.5],["Analog", "LSY", "ToggleOn", 0.5, -127]]],
 
-      "RightForward": ["Gamepad", "A", "Tap", 0.5],
-      "RightBackward": ["Gamepad", "A", "Tap", 0.5],
+      "RightForwardSlow": ["Gamepad", "A", "Tap", 0.5],
+      "RightBackwardSlow": ["Gamepad", "A", "Tap", 0.5],
+        "RightForwardFast": ["Gamepad", "A", "Tap", 0.5],
+      "RightBackwardFast": ["Gamepad", "A", "Tap", 0.5],
 
 
       "BothForward": ["Gamepad", "A", "Tap", 0.5],
       "BothBackward": ["Gamepad", "A", "Tap", 0.5],
 
       "ReinHoldMouse": false,
-        "ReinMode": "Analog",
-      "BothPulled": ["Gamepad", "F", "Tap", 0.5],
+        "ReinMode": ["Gamepad", "LSX", 1],
+
+      "BothPulled": ["Gamepad", "RB", "Tap", 0.5],
       "BothPulledFar": ["Macro", [["Gamepad", "RB", "Tap", 1],["Analog", "LSY", "ToggleOff", 0.5]]],
 
 
-      "Button1": ["Gamepad", "LSB", "Tap", 1],
+      "Button1": ["Analog", "LSX", "Tap", 1, 9001],
       "Button2": ["Gamepad", "B", "Toggle", 0.5],
       "Button3": ["Gamepad", "B", "Toggle", 0.5],
       "Button4": ["Gamepad", "B", "Toggle", 0.5]

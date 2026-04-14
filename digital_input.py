@@ -9,8 +9,8 @@ class StirrupHandler:
     def __init__(self, left_stirrup_input, right_stirrup_input):
         self.left_stirrup_input = left_stirrup_input
         self.right_stirrup_input = right_stirrup_input
-        self.left_offset = 0
-        self.right_offset = 0
+        self.left_neutral = 255
+        self.right_neutral = 255
         self.now = time.monotonic()
         self.current_time = time.monotonic()
         self.left = 412
@@ -22,24 +22,41 @@ class StirrupHandler:
         self.ready = False
 
         self.internal_states = {
-            "left_stirrup_forward": False,
-                "right_stirrup_forward": False,
-                "left_stirrup_backward": False,
-                "right_stirrup_backward": False,
+                "left_stirrup_forward_fast": False,
+                "right_stirrup_forward_fast": False,
+                "left_stirrup_backward_fast": False,
+                "right_stirrup_backward_fast": False,
+            "left_stirrup_forward_slow": False,
+            "right_stirrup_forward_slow": False,
+            "left_stirrup_backward_slow": False,
+            "right_stirrup_backward_slow": False,
+
         }
         self.left_timer = 0
         self.right_timer = 0
+        self.left_timer_on = False
+        self.right_timer_on = False
         self.both_timer = 0
-        self.dead_zone = 10
+        self.dead_zone = 20
 
-        self.trigger_forward = -60
-        self.trigger_backward = 50
+        # TODO: Move these to own settings.json!
+        self.time_threshold = 2.0
+        self.slow = 0.2
+        self.fast = 0.05
+        self.trigger_forward = 120
+        self.trigger_backward = 120
+
+
         self.last_run = 0
         self.states = {
-            "LeftForward": False,
-            "LeftBackward": False,
-            "RightForward": False,
-            "RightBackward": False,
+            "LeftForwardSlow": False,
+            "LeftBackwardSlow": False,
+            "RightForwardSlow": False,
+            "RightBackwardSlow": False,
+            "LeftForwardFast": False,
+            "LeftBackwardFast": False,
+            "RightForwardFast": False,
+            "RightBackwardFast": False,
             "BothForward": False,
             "BothBackward": False,
         }
@@ -50,86 +67,107 @@ class StirrupHandler:
 
     def update(self):
 
-        self.left = int(map_range(self.left_stirrup_input.value, 0, 65520, 0, 512))-self.right_offset
-        self.right = int(map_range(self.right_stirrup_input.value, 0, 65520, 0, 512))-self.left_offset
+        self.left = int(map_range(self.left_stirrup_input.value, 0, 65520, 0, 512))
+        self.right = int(map_range(self.right_stirrup_input.value, 0, 65520, 0, 512))
         self.current_time = time.monotonic()
 
-        #print(self.left, self.right)
 
-        self.states = {
-            "LeftForward": False,
-            "LeftBackward": False,
-            "RightForward": False,
-            "RightBackward": False,
-            "BothForward": False,
-            "BothBackward": False,
-        }
-
-
+        # Reset states
+        for key in self.states:
+            self.states[key] = False
 
         for side in ["left", "right"]:
             value = getattr(self, side)
             forward_flag = f"{side}_forward"
             backward_flag = f"{side}_backward"
             timer_attr = f"{side}_timer"
+            timer_state = f"{side}_timer_on"
+            neutral = f"{side}_neutral"
+
+            trigger_forward = getattr(self, neutral)-self.trigger_forward
+            trigger_backward = getattr(self, neutral) + self.trigger_backward
+            dead_zone_min = getattr(self, neutral)-self.dead_zone
+            dead_zone_max = getattr(self, neutral)+self.dead_zone
 
             # Forward trigger
-            if value <= self.trigger_forward and not getattr(self, forward_flag):
-                setattr(self, timer_attr, self.current_time)
-                setattr(self, forward_flag, True)
-                self.internal_states[f"{side}_stirrup_forward"] = True
+            if value <= trigger_forward and not getattr(self, forward_flag):
+                if DEBUG: print(trigger_forward, "position",value, "dead_zone_min", dead_zone_min, "dead_zone_max", dead_zone_max)
+                speed = self.current_time-getattr(self, timer_attr)
+                if speed < self.time_threshold:
+                    setattr(self, forward_flag, True)
+                    if speed > self.slow:
+                        self.internal_states[f"{side}_stirrup_forward_slow"] = True
+                    elif speed < self.slow:
+                        self.internal_states[f"{side}_stirrup_forward_fast"] = True
+
+
 
             # Backward trigger
-            elif value >= self.trigger_backward and not getattr(self, backward_flag):
-                setattr(self, timer_attr, self.current_time)
-                setattr(self, backward_flag, True)
-                self.internal_states[f"{side}_stirrup_backward"] = True
+            elif value >= trigger_backward and not getattr(self, backward_flag):
+                if DEBUG: print(trigger_backward, "position",value, "dead_zone_min", dead_zone_min, "dead_zone_max", dead_zone_max)
+                speed = self.current_time - getattr(self, timer_attr)
+                if speed < self.time_threshold:
+                    setattr(self, backward_flag, True)
+                    if speed > self.slow:
+                        self.internal_states[f"{side}_stirrup_backward_slow"] = True
+                    elif speed < self.slow:
+                        self.internal_states[f"{side}_stirrup_backward_fast"] = True
+
+
 
             # Dead zone reset
-            if -self.dead_zone <= value <= self.dead_zone:
+            if dead_zone_min <= value <= dead_zone_max:
                 setattr(self, timer_attr, self.current_time)
                 setattr(self, forward_flag, False)
                 setattr(self, backward_flag, False)
+                setattr(self, timer_state, False)
+            else:
+                if getattr(self, timer_state) is False:
+                    setattr(self, timer_attr, self.current_time)
+                    setattr(self, timer_state, True)
+
+
+
 
         if self.current_time - self.last_run >= 0.3:
             self.last_run = self.current_time
 
 
-            lf = self.internal_states["left_stirrup_forward"]
-            rf = self.internal_states["right_stirrup_forward"]
-            lb = self.internal_states["left_stirrup_backward"]
-            rb = self.internal_states["right_stirrup_backward"]
+            lfs = self.internal_states["left_stirrup_forward_slow"]
+            rfs = self.internal_states["right_stirrup_forward_slow"]
+            lbs = self.internal_states["left_stirrup_backward_slow"]
+            rbs = self.internal_states["right_stirrup_backward_slow"]
+            lff = self.internal_states["left_stirrup_forward_fast"]
+            rff = self.internal_states["right_stirrup_forward_fast"]
+            lbf = self.internal_states["left_stirrup_backward_fast"]
+            rbf = self.internal_states["right_stirrup_backward_fast"]
 
-            if lf and rf:
+            if lff and rff:
                 self.states["BothForward"] = True
-            elif lb and rb:
+            elif lbf and rbf:
                 self.states["BothBackward"] = True
-            elif lf:
-                self.states["LeftForward"] = True
-            elif rf:
-                self.states["RightForward"] = True
-            elif lb:
-                self.states["LeftBackward"] = True
-            elif rb:
-                self.states["RightBackward"] = True
+            elif lfs:
+                self.states["LeftForwardSlow"] = True
+            elif rfs:
+                self.states["RightForwardSlow"] = True
+            elif lbs:
+                self.states["LeftBackwardSlow"] = True
+            elif rbs:
+                self.states["RightBackwardSlow"] = True
+            elif lff:
+                self.states["LeftForwardFast"] = True
+            elif rff:
+                self.states["RightForwardFast"] = True
+            elif lbf:
+                self.states["LeftBackwardFast"] = True
+            elif rbf:
+                self.states["RightBackwardFast"] = True
 
-            # Reset states
+            # Reset internal states
             for key in self.internal_states:
                 self.internal_states[key] = False
 
 
-
-
-
-
-
-
-            self.internal_states = {
-                "left_stirrup_forward": False,
-                "right_stirrup_forward": False,
-                "left_stirrup_backward": False,
-                "right_stirrup_backward": False,
-            }
 
 
 
@@ -141,16 +179,16 @@ class StirrupHandler:
         right_samples = []
 
         for i in range(5):
-            left_val = self.left
-            right_val = self.right
+            left_val = int(map_range(self.left_stirrup_input.value, 0, 65520, 0, 512))
+            right_val = int(map_range(self.right_stirrup_input.value, 0, 65520, 0, 512))
             time.sleep(0.1)
             left_samples.append(left_val)
             right_samples.append(right_val)
 
-        self.left_offset = int(sum(left_samples) / len(left_samples))
-        self.right_offset = int(sum(right_samples) / len(right_samples))
+        self.left_neutral = int(sum(left_samples) / len(left_samples))
+        self.right_neutral = int(sum(right_samples) / len(right_samples))
 
-        print("Calibration done, stirrup offsets:", self.left_offset, self.right_offset)
+        print("Calibration done, stirrup neutral positions:", self.left_neutral, self.right_neutral)
 
 
 # TODO: REWRITE THIS CLASS

@@ -22,7 +22,7 @@ class ReinsHandler:
         self.reins_pulled_far = False
 
         self.neutral_position = 0
-        self.pulled_threshold = 400
+        self.pulled_threshold = 300
         self.lighty_pulled_threshold = 155
         self.analog_value = 0
         self.timer_started = False
@@ -50,14 +50,10 @@ class ReinsHandler:
             "BothPulledFar": False
         }
 
-       
 
 
 
-        if not self.reins_pulled or not self.reins_pulled_far:
-            self.left = left
-            self.right = right
-            self.analog_value = 0
+
 
         if left >= self.pulled_threshold and right >= self.pulled_threshold and not self.reins_pulled_far:
             self.reins_pulled = True
@@ -65,19 +61,35 @@ class ReinsHandler:
             self.reins_pulled_far = True
 
 
-        if left != 0 and right != 0 and not self.reins_pulled:
-            if not self.timer_started:
-                self.start_time = time.monotonic()
-                self.timer_started = True
+        if left == 0 and right == 0:
+            self.reins_pulled = False
+            self.reins_pulled_far = False
+            self.elapsed_time = 0
+            self.timer_started = False
 
-            self.elapsed_time = time.monotonic() - self.start_time
+        if left != 0 and right != 0:
+            if not self.timer_started:
+                self.timer_started = True
+                self.start_time = self.current_time
+
+        if not self.reins_pulled or not self.reins_pulled_far:
+            self.left = left
+            self.right = right
+
+
+
+
+
+            if self.timer_started:
+                self.elapsed_time = time.monotonic() - self.start_time
             # TODO: Add option for this!!
-            if self.elapsed_time < 1:
+            if self.elapsed_time < 0.5:
                 if left >= self.lighty_pulled_threshold and right >= self.lighty_pulled_threshold and not self.reins_pulled_far:
                     self.digital_states["BothPulled"] = True
                     if DEBUG: print("Reins pulled ", self.left, self.right, self.elapsed_time)
 
                     self.reins_pulled = True
+
 
         if left <= self.neutral_position and right <= self.neutral_position:
             self.reins_pulled = False

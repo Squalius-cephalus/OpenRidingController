@@ -30,3 +30,4 @@ class PiezoPlayer:
 
     def off(self):
         self.piezo.duty_cycle = 0
+
