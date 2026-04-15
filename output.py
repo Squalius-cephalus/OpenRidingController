@@ -2,14 +2,19 @@ import board
 import digitalio
 import neopixel
 import json
-
+from analogio import AnalogIn
+from analog_input import ReinsHandler
+from digital_input import StirrupHandler, ButtonHandler
 from reins_input import ReinsHandler
-from stirrups_input import StirrupsHandler
-from horse_logic import HorseLogicHandler
-from analog_output import AnalogHandler
-from digital_output import DigitalHandler
-from digital_input import ButtonHandler
+from stirrup_input import StirrupHandler
+
+
 import time
+
+
+
+
+
 with open("/profiles.json", "r") as f:
     data = json.load(f)
 
@@ -42,19 +47,15 @@ button4.direction = digitalio.Direction.INPUT
 button4.pull = digitalio.Pull.UP
 
 
-import time
-import board
-import pwmio
-
-
-
+left_rein_in = AnalogIn(board.GP26)
+right_rein_in = AnalogIn(board.GP27)
+left_stirrup_in = AnalogIn(board.GP28)
+right_stirrup_in = AnalogIn(board.GP29)
 
 onboard_led = neopixel.NeoPixel(board.GP16, 1, brightness=0.3, auto_write=True)
 
 setup_calibration = False
-analog_handler = AnalogHandler()
-digital_handler = DigitalHandler()
-button_handler = ButtonHandler(button1, button2, button3, button4)
+
 class ProfileManager:
     def __init__(self, profiles, pixel):
         self.profiles = profiles
@@ -63,18 +64,14 @@ class ProfileManager:
         self.current_profile = self.profiles[self.current_index]
         if DEBUG:
             print("Active profile:", self.current_profile["Name"])
-        self.pixel[0] = self.current_profile["LED Color"]
-        analog_handler.set_new_profile(self.current_profile)
-        digital_handler.set_new_profile(self.current_profile)
+        self.pixel[0] = self.current_profile["Color"]
 
     def change_profile(self):
         self.current_index = (self.current_index + 1) % len(self.profiles)
         self.current_profile = self.profiles[self.current_index]
         if DEBUG:
             print("Active profile:", self.current_profile["Name"])
-        self.pixel[0] = self.current_profile["LED Color"]
-        analog_handler.set_new_profile(self.current_profile)
-        digital_handler.set_new_profile(self.current_profile)
+        self.pixel[0] = self.current_profile["Color"]
 
 
 
@@ -83,20 +80,14 @@ class ProfileManager:
 
 profile_manager = ProfileManager(loaded_profiles, onboard_led)
 reins_handler = ReinsHandler()
-stirrups_handler = StirrupsHandler()
-horse_logic_handler = HorseLogicHandler()
+stirrup_handler = StirrupHandler()
 
 
 
 
 def calibrate():
-    stirrups_handler.calibrate()
+    stirrup_handler.calibrate()
     reins_handler.calibrate()
-
-
-
-
-
 
 
 def pause_inputs():
@@ -149,23 +140,8 @@ while True:
 
     # Update states from inputs
     reins_handler.update()
-    stirrups_handler.update()
-    button_handler.update()
+    stirrup_handler.update()
 
 
-    stirrup_states = stirrups_handler.get_states()
-    reins_states = reins_handler.get_states()
-    combined_states = reins_states | stirrup_states
-
-    # Horse will process everything
-    horse_logic_handler.update_analog(reins_handler.get_analog_states())
-    horse_logic_handler.update(combined_states)
-
-
-
-    # Output Horse states to output
-    analog_handler.update(reins_handler.get_analog_states())
-    digital_handler.update(horse_logic_handler.get_states() | button_handler.get_states())
-
-
-
+    stirrup_states = stirrup_handler.get_states()
+    reins_states = reins_handler.get_digital_states()

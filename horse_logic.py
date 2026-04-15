@@ -92,7 +92,7 @@ class HorseLogicHandler:
     def get_states(self):
         for i, value in self.states.items():
             if value != self.previous_states[i]:
-                print(i, "Has changed", value)
+                #print(i, "Has changed", value)
                 self.previous_states[i] = value
 
         return self.states

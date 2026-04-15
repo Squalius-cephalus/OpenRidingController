@@ -4,17 +4,41 @@
       "id": 0,
       "Name": "SSO",
       "LED Color": [174, 50, 236],
-      "ReinMode": [],
+      "Rein Mode": ["Mouse", "LEFT_BUTTON", "Tap"],
       "Buttons": {
-        "Turn Left": [],
-        "Turn Right": [],
-        "Start Moving": [],
-        "Add Speed": [],
-        "Slow Down": [],
-        "Stop": [],
-        "Reverse": [],
-        "After Reverse": [],
-        "Jump": [],
+        "Start Moving": ["Macro", ["Keyboard","A","Tap"],["Keyboard","B","Tap"],["Keyboard","C","Tap"],["Keyboard","D","Tap"]],
+        "Add Speed": ["B"],
+        "Slow Down": ["C"],
+        "Stop": ["D"],
+        "Reverse": ["E"],
+        "After Reverse": ["F"],
+        "Jump": ["G"],
+
+        "Button1": ["MouseMove","X","Tap",300],
+        "Button2": ["Keyboard","B","Multitap", 8],
+        "Button3": ["Keyboard","C","Tap"],
+        "Button4": ["Macro", ["Keyboard","A","Tap"],["Keyboard","B","Tap"],["Keyboard","C","Tap"],["Keyboard","D","Tap"]]
+      }
+
+    },
+    {
+      "id": 0,
+      "Name": "RDR2",
+      "LED Color": [255, 0, 0],
+      "Rein Mode": ["Mouse", "LEFT_BUTTON", "Tap"],
+      "Buttons": {
+        "Start Moving": ["Macro", ["Keyboard","A","Tap"],["Keyboard","B","Tap"],["Keyboard","C","Tap"],["Keyboard","D","Tap"]],
+        "Add Speed": ["B"],
+        "Slow Down": ["C"],
+        "Stop": ["D"],
+        "Reverse": ["E"],
+        "After Reverse": ["F"],
+        "Jump": ["G"],
+
+        "Button1": ["MouseMove","X","Tap",300],
+        "Button2": ["Gamepad","Y","Multitap", 8],
+        "Button3": ["Gamepad","B","Tap"],
+        "Button4": ["Macro", ["Keyboard","A","Tap"],["Keyboard","B","Tap"],["Keyboard","C","Tap"],["Keyboard","D","Tap"]]
       }
 
     }
