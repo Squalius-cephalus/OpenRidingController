@@ -2,19 +2,12 @@ import board
 import digitalio
 import neopixel
 import json
-from analogio import AnalogIn
-from analog_input import ReinsHandler
-from digital_input import StirrupHandler, ButtonHandler
 
-from output import OutputManager
-from piezo import PiezoPlayer
+from reins_input import ReinsHandler
+from stirrups_input import StirrupsHandler
+from horse_logic import HorseLogicHandler
+
 import time
-
-piezo = PiezoPlayer(board.GP8)
-
-
-
-
 with open("/profiles.json", "r") as f:
     data = json.load(f)
 
@@ -47,10 +40,12 @@ button4.direction = digitalio.Direction.INPUT
 button4.pull = digitalio.Pull.UP
 
 
-left_rein_in = AnalogIn(board.GP26)
-right_rein_in = AnalogIn(board.GP27)
-left_stirrup_in = AnalogIn(board.GP28)
-right_stirrup_in = AnalogIn(board.GP29)
+import time
+import board
+import pwmio
+
+
+
 
 onboard_led = neopixel.NeoPixel(board.GP16, 1, brightness=0.3, auto_write=True)
 
@@ -64,7 +59,7 @@ class ProfileManager:
         self.current_profile = self.profiles[self.current_index]
         if DEBUG:
             print("Active profile:", self.current_profile["Name"])
-        self.pixel[0] = self.current_profile["Color"]
+        self.pixel[0] = self.current_profile["LED Color"]
 
     def change_profile(self):
         self.current_index = (self.current_index + 1) % len(self.profiles)
@@ -73,31 +68,30 @@ class ProfileManager:
             print("Active profile:", self.current_profile["Name"])
         self.pixel[0] = self.current_profile["Color"]
 
-        output_handler.release_all()
-
-        output_handler.set_new_profile(self.current_profile)
 
 
         time.sleep(0.3)
 
 
 profile_manager = ProfileManager(loaded_profiles, onboard_led)
-reins_handler = ReinsHandler(left_rein_in, right_rein_in)
-stirrup_handler = StirrupHandler(left_stirrup_in, right_stirrup_in)
-output_handler = OutputManager(profile_manager.current_profile)
-button_handler = ButtonHandler(button1, button2,button3,button4)
+reins_handler = ReinsHandler()
+stirrups_handler = StirrupsHandler()
+horse_logic_handler = HorseLogicHandler()
 
 
 
 def calibrate():
-    piezo.play_tone(440, 0.5)  # A4
-    stirrup_handler.calibrate()
-    piezo.play_tone(540, 0.5)  # A4
+    stirrups_handler.calibrate()
     reins_handler.calibrate()
 
 
+
+
+
+
+
 def pause_inputs():
-    output_handler.release_all()
+
     last_toggle = 0
     blink = False
     original_color = profile_manager.pixel[0]
@@ -146,16 +140,18 @@ while True:
 
     # Update states from inputs
     reins_handler.update()
-    stirrup_handler.update()
-    button_handler.update()
+    stirrups_handler.update()
 
 
-    stirrup_states = stirrup_handler.get_states()
-    reins_states = reins_handler.get_digital_states()
-    button_states = button_handler.get_states()
-    digital_states = stirrup_states | reins_states | button_states
-    analog_states = reins_handler.get_analog_states()
+    stirrup_states = stirrups_handler.get_states()
+    reins_states = reins_handler.get_states()
+    combined_states = reins_states | stirrup_states
 
-    # uh oh
-    output_handler.update(digital_states)
-    output_handler.analog_input(analog_states)
+    # Horse will process everything
+    #horse_logic_handler.update_analog(reins_handler.get_analog_states())
+    horse_logic_handler.update(combined_states)
+    horse_logic_handler.get_states()
+
+    # Output Horse states to output
+
+
