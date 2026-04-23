@@ -4,8 +4,9 @@ class MouseOutput:
     def __init__(self):
         self.mouse = Mouse(usb_hid.devices)
         self.previous = 0
-        self.dead_zone = 10
+        self.dead_zone = 30
         self.current_position = 0
+        self.mouse_moved = False
 
 
         self.mouse_map = {
@@ -37,6 +38,10 @@ class MouseOutput:
         elif axis == "Wheel":
             self.mouse.move(wheel=analog_amount)
 
+    def move_xy(self, analog_amount_x=0, analog_amount_y=0, wheel=0):
+
+        self.mouse.move(x=analog_amount_x, y=analog_amount_y, wheel=wheel)
+
 
 
     def reins_output(self, mouse_button, hold, analog_amount, returning):
@@ -44,17 +49,22 @@ class MouseOutput:
             movement = analog_amount[1]-analog_amount[0]
             if hold == "Hold" and combined>self.dead_zone:
                 self.press(mouse_button)
-            if hold == "Hold" and combined == 0 and self.previous != 0:
-                self.release(mouse_button)
+            
 
             if returning:
-                movement = self.update_axis(combined)
-                self.move("X", movement)
+                movement = self.update_axis(movement)
+                if abs(movement)>0:
+                    self.move("X", movement)
+                    self.mouse_moved = True
                 self.previous = movement
             else:
                 if abs(movement)>(int(self.dead_zone/2)):
                     self.move("X",movement)
                     self.previous = movement
+
+            if hold == "Hold" and abs(combined) < 6 and self.mouse_moved:
+                self.release(mouse_button)
+                self.mouse_moved = False
 
 
     def release_all(self):
@@ -71,7 +81,7 @@ class MouseOutput:
 
         
     def update_axis(self, analog_amount):
-        max_distance = 2048
+        max_distance = 1024
 
         if abs(analog_amount) < self.dead_zone:
             target = 0

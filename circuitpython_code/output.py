@@ -4,6 +4,12 @@ from gamepad_output import GamepadOutput
 keyboard = KeyboardOutput()
 mouse = MouseOutput()
 gamepad = GamepadOutput()
+import adafruit_nunchuk
+import board
+import busio
+import time
+i2c = busio.I2C(board.GP1, board.GP0)
+nc = adafruit_nunchuk.Nunchuk(i2c)
 
 
 class OutputManager:
@@ -15,12 +21,19 @@ class OutputManager:
         self.reserved_keys = []
         self.last_time = 0
         self.rein_mode = [""]
+        self.nunchuck_mode = [""]
         self.keyboard_reins_threshold = settings["KeyboardReinsThreshold"]
         self.gamepad_reins_threshold = settings["GamepadReinsThreshold"]
         self.tap_time = settings["Tap Time"]
 
+        self.nunchuck_c_released = False
+        self.nunchuck_z_released = False
+        self.nunchuck_connected = True
 
     def update(self, states, analog_amount, current_time):
+        if self.nunchuck_connected:
+            states = states | self.handle_nunchuck()
+        
         if self.reserved_keys:
             if not self.hold_keys:
                 a = len(self.reserved_keys) - 1
@@ -42,6 +55,7 @@ class OutputManager:
 
         self.release_hold_keys(current_time)
         self.update_reins_output(current_time, analog_amount)
+        
 
     def parse_input(self, button, current_time):
         try:
@@ -136,6 +150,7 @@ class OutputManager:
         try:
             self.buttons = profile["Buttons"]
             self.rein_mode = profile["Rein Mode"]
+            self.nunchuck_mode = profile["Nunchuck Mode"]
         except KeyError:
             while True:
                 print("Profile has no buttons! Fix your profile.json!")
@@ -167,6 +182,60 @@ class OutputManager:
         elif self.rein_mode[0] == "Joystick":
             analog_value = analog_value[1]-analog_value[0]
             gamepad.move("LSX", analog_value)
+
+
+    def handle_nunchuck(self):
+        x, y = nc.joystick
+        ax, ay, az = nc.acceleration
+        deadzone = 5
+        nunchuck_button_states = {
+            "Nunchuck C Button": False,
+            "Nunchuck Z Button": False,
+        }
+
+        if nc.buttons.C:
+            nunchuck_button_states["Nunchuck C Button"] = True
+        if nc.buttons.Z:
+            nunchuck_button_states["Nunchuck Z Button"] = True
+
+
+        centered_x = x - 128
+        centered_y = y - 128
+
+        if abs(centered_x) < deadzone:
+            centered_x = 0
+        if abs(centered_y) < deadzone:
+            centered_y = 0
+
+        try:
+            sensitivity = self.nunchuck_mode[1]
+        except IndexError:
+            sensitivity = 1
+
+        centered_x = int(centered_x / sensitivity)
+        centered_y = int(centered_y / sensitivity)
+
+
+        if self.nunchuck_mode[0] == "Mouse":
+            mouse.move_xy(centered_x, -centered_y)
+
+        if self.nunchuck_mode[0] == "Analog":
+     
+            try:
+                stick = self.nunchuck_mode[2]
+            except IndexError:
+                stick = "LS"
+
+            x_axis = stick+"X"
+            y_axis = stick+"Y"
+
+            gamepad.move(x_axis, centered_x)
+            gamepad.move(y_axis, centered_y)
+
+        return nunchuck_button_states
+
+            
+  
 
 
 

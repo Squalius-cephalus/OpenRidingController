@@ -4,20 +4,26 @@
       "id": 0,
       "Name": "SSO",
       "LED Color": [174, 50, 236],
-      "Rein Mode": ["Joystick", "LEFT_BUTTON", "Hold"],
+      "Rein Mode": ["MouseReturning", "LEFT_BUTTON", "Hold"],
+      "Nunchuck Mode": ["Analog", 1],
       "Buttons": {
-        "Start Moving": ["Keyboard","W","Tap"],
         "Add Speed": ["Keyboard","W","Tap"],
         "Slow Down": ["Keyboard","S","Tap"],
         "Stop": ["Keyboard","X","Tap"],
         "Reverse": ["Keyboard","S","Multitap", 3],
         "After Reverse": ["Keyboard","W","Tap"],
         "Jump": ["Keyboard","SPACE","Tap"],
+        "Right Backward": ["Keyboard","D","Tap"],
 
-        "Button1": ["Joystick","LT","Tap", 0,500],
-        "Button2": ["Joystick","RT","Tap", 0,500],
-        "Button3": ["Joystick","RT","Tap", 0,500],
-        "Button4": ["Joystick","RT","Tap", 0,-500]
+        "Button1": ["MouseButtons","LEFT_BUTTON","Tap"],
+        "Button2": ["MouseButtons","RIGHT_BUTTON","Tap"],
+        "Button3": ["Keyboard","W","Tap"],
+        "Button4": ["Keyboard","W","Tap"],
+
+        "Nunchuck C Button": ["MouseButtons","LEFT_BUTTON","Hold", 0.01],
+        "Nunchuck Z Button": ["MouseButtons","RIGHT_BUTTON","Hold", 0.01]
+        
+
       }
 
     },
@@ -26,40 +32,48 @@
       "Name": "RDR2",
       "LED Color": [255, 0, 0],
       "Rein Mode": ["Joystick", "LSX", "Tap"],
+      "Nunchuck Mode": ["Mouse", 1],
       "Buttons": {
-        "Start Moving": ["Gamepad","B","Tap"],
         "Add Speed": ["Gamepad","B","Tap"],
         "Slow Down": ["Gamepad","B","Tap"],
         "Stop": ["Gamepad","B","Tap"],
         "Reverse": ["Gamepad","B","Tap"],
         "After Reverse": ["Gamepad","B","Tap"],
         "Jump": ["Gamepad","B","Tap"],
+        "Right Backward": ["Keyboard","W","Tap"],
 
         "Button1": ["Gamepad","A","Tap"],
         "Button2": ["Gamepad","B","Tap"],
         "Button3": ["Gamepad","X","Tap"],
-        "Button4": ["Gamepad","Y","Tap"]
+        "Button4": ["Gamepad","Y","Tap"],
+
+        "Nunchuck C Button": ["MouseButtons","LEFT_BUTTON","Hold", 0.01],
+        "Nunchuck Z Button": ["MouseButtons","RIGHT_BUTTON","Hold", 0.01]
       }
 
     },
     {
       "id": 0,
-      "Name": "SSO_Fake_analog",
+      "Name": "GP2040-CE",
       "LED Color": [0, 0, 255],
-      "Rein Mode": ["Keyboard", "D", "A"],
+      "Rein Mode": ["Mouse", "LEFT_BUTTON", "None"],
+      "Nunchuck Mode": ["Mouse", 1],
       "Buttons": {
-        "Start Moving": ["Keyboard","W","Tap"],
-        "Add Speed": ["Keyboard","W","Tap"],
-        "Slow Down": ["Keyboard","S","Tap"],
+        "Add Speed": ["Keyboard","A","Tap"],
+        "Slow Down": ["Keyboard","B","Tap"],
         "Stop": ["Keyboard","X","Tap"],
-        "Reverse": ["Keyboard","S","Multitap", 8],
-        "After Reverse": ["Keyboard","W","Tap"],
+        "Reverse": ["Keyboard","Y","Tap", 8],
+        "After Reverse": ["Keyboard","Z","Tap"],
         "Jump": ["Keyboard","SPACE","Tap"],
+        "Right Backward": ["Keyboard","W","Tap"],
 
         "Button1": ["Keyboard","W","Tap",300],
         "Button2": ["Keyboard","A","Tap", 8],
         "Button3": ["Keyboard","S","Tap"],
-        "Button4": ["Keyboard","D","Tap"]
+        "Button4": ["Keyboard","D","Tap"],
+
+        "Nunchuck C Button": ["MouseButtons","LEFT_BUTTON","Hold", 0.01],
+        "Nunchuck Z Button": ["MouseButtons","RIGHT_BUTTON","Hold", 0.01]
       }
 
     }

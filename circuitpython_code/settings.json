@@ -3,17 +3,17 @@
   "settings": {
     "reins": {
       "Threshold Low": 30,
-      "Threshold Mid": 200,
-      "Threshold High": 350,
+      "Threshold Mid": 150,
+      "Threshold High": 390,
       "Dead Zone": 10,
       "Time Threshold": 0.35
     },
     "stirrups": {
       "Inverted": true,
       "Dead Zone": 40,
-      "Forward Threshold": 50,
-      "Backward Threshold": 50,
-      "Threshold Timer": 1.0
+      "Forward Threshold": 60,
+      "Backward Threshold": 40,
+      "Threshold Timer": 0.5
     },
     "outputs": {
       "KeyboardReinsThreshold": 30,
