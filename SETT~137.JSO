@@ -1,0 +1,11 @@
+{
+  
+  "settings": {
+    "reins": {},
+    "stirrups": {},
+    "outputs": {
+      "KeyboardReinsThreshold": 30,
+      "GamepadReinsThreshold": 30
+    }
+}
+}

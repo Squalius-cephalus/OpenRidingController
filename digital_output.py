@@ -3,11 +3,13 @@ from adafruit_hid.keyboard import Keyboard
 from adafruit_hid.keycode import Keycode
 from adafruit_hid.mouse import Mouse
 import time
+
+
 from hid_gamepad import Gamepad
 class DigitalHandler:
     def __init__(self):
         self.keyboard = Keyboard(usb_hid.devices)
-        self.mouse = Mouse(usb_hid.devices)
+
         self.gamepad = Gamepad(usb_hid.devices)
         self.buttons = {}
         self.previous_states = {}
@@ -15,6 +17,7 @@ class DigitalHandler:
         self.toggle_keys = {}
         self.reserved_keys = []
         self.last_time = 0
+        self.analog_handler = None
 
 
 
@@ -51,8 +54,9 @@ class DigitalHandler:
         }
 
 
-    def update(self, states):
+    def update(self, states, analog_handler):
         current_time = time.monotonic()
+        self.analog_handler = analog_handler
 
         if self.reserved_keys:
             if not self.hold_keys:
@@ -110,7 +114,7 @@ class DigitalHandler:
         if action == "Hold":
             self.add_hold_keys(key, value, mode, current_time,analog_value)
         elif action == "Tap":
-            self.add_hold_keys(key, 0.1, mode, current_time, analog_value)
+            self.add_hold_keys(key, 0.3, mode, current_time, analog_value)
         elif action == "Toggle" or action == "ToggleOn" or action == "ToggleOff":
             self.handle_toggle_keys(key, mode, action,analog_value)
         elif action == "Multitap":
@@ -163,12 +167,12 @@ class DigitalHandler:
             keycode = self._get_gamepad_code(key)
             self.gamepad.release_buttons(keycode)
         elif mode == "MouseButtons":
-            keycode = self._get_mouse_code(key)
-            self.mouse.release(keycode)
+            self.analog_handler.mouse_button_release(key)
         elif mode == "MouseMove":
-            self.handle_mouse_movement(key, 0)
+            self.analog_handler.mouse_button_release(key)
+            self.analog_handler.mouse_move_xy(key, 0)
         elif mode == "Joystick":
-            self.handle_analog(key, 0)
+            self.analog_handler.handle_analog(key, 0)
 
 
     def press_key(self, key, mode, analog_value):
@@ -180,49 +184,11 @@ class DigitalHandler:
             keycode = self._get_gamepad_code(key)
             self.gamepad.press_buttons(keycode)
         elif mode == "MouseButtons":
-            keycode = self._get_mouse_code(key)
-            self.mouse.press(keycode)
+            self.analog_handler.mouse_button_press(key)
         elif mode == "MouseMove":
-            self.handle_mouse_movement(key, analog_value)
+            self.analog_handler.mouse_move_xy(key, analog_value)
         elif mode == "Joystick":
-            self.handle_analog(key, analog_value)
-
-    def handle_analog(self, keycode, analog_value):
-
-        directions = ["LSX", "LSY", "RSY", "RSX"]
-        if keycode not in directions:
-            print("Unknown Analog key:", keycode)
-            keycode = "LSX"
-        if keycode == "LSX":
-            self.gamepad.move_joysticks(x=analog_value)
-        elif keycode == "LSY":
-            self.gamepad.move_joysticks(y=analog_value)
-        elif keycode == "RSX":
-            self.gamepad.move_joysticks(z=analog_value)
-        elif keycode == "RSY":
-            self.gamepad.move_joysticks(r_z=analog_value)
-
-
-    def handle_mouse_movement(self, keycode, analog_value):
-
-        directions = ["X", "Y", "Wheel"]
-        if keycode not in directions:
-            print("Unknown Mouse Direction:", keycode)
-            keycode = "X"
-        if keycode == "X":
-            self.mouse.move(x=analog_value)
-        elif keycode == "Y":
-            self.mouse.move(y=analog_value)
-        elif keycode == "Wheel":
-            self.mouse.move(wheel=analog_value)
-
-
-    def _get_mouse_code(self, key_name):
-        key = self.mouse_map.get(key_name.upper())
-        if key is None:
-            print("Unknown mouse key", key_name.upper())
-            return Mouse.LEFT_BUTTON
-        return key
+            self.analog_handler.handle_analog(key, analog_value)
 
     def _get_gamepad_code(self, key_name):
         key = self.gamepad_map.get(key_name.upper())
@@ -250,3 +216,9 @@ class DigitalHandler:
             while True:
                 print("Profile has no buttons! Fix your profile.json!")
                 time.sleep(1)
+
+    def release_all(self):
+        self.keyboard.release_all()
+
+
+

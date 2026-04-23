@@ -4,20 +4,20 @@
       "id": 0,
       "Name": "SSO",
       "LED Color": [174, 50, 236],
-      "Rein Mode": ["Mouse", "LEFT_BUTTON", "Tap"],
+      "Rein Mode": ["Joystick", "LEFT_BUTTON", "Hold"],
       "Buttons": {
-        "Start Moving": ["Macro", ["Keyboard","A","Tap"],["Keyboard","B","Tap"],["Keyboard","C","Tap"],["Keyboard","D","Tap"]],
-        "Add Speed": ["B"],
-        "Slow Down": ["C"],
-        "Stop": ["D"],
-        "Reverse": ["E"],
-        "After Reverse": ["F"],
-        "Jump": ["G"],
+        "Start Moving": ["Keyboard","W","Tap"],
+        "Add Speed": ["Keyboard","W","Tap"],
+        "Slow Down": ["Keyboard","S","Tap"],
+        "Stop": ["Keyboard","X","Tap"],
+        "Reverse": ["Keyboard","S","Multitap", 3],
+        "After Reverse": ["Keyboard","W","Tap"],
+        "Jump": ["Keyboard","SPACE","Tap"],
 
-        "Button1": ["MouseMove","X","Tap",300],
-        "Button2": ["Keyboard","B","Multitap", 8],
-        "Button3": ["Keyboard","C","Tap"],
-        "Button4": ["Macro", ["Keyboard","A","Tap"],["Keyboard","B","Tap"],["Keyboard","C","Tap"],["Keyboard","D","Tap"]]
+        "Button1": ["Joystick","LT","Tap", 0,500],
+        "Button2": ["Joystick","RT","Tap", 0,500],
+        "Button3": ["Joystick","RT","Tap", 0,500],
+        "Button4": ["Joystick","RT","Tap", 0,-500]
       }
 
     },
@@ -25,20 +25,41 @@
       "id": 0,
       "Name": "RDR2",
       "LED Color": [255, 0, 0],
-      "Rein Mode": ["Mouse", "LEFT_BUTTON", "Tap"],
+      "Rein Mode": ["Joystick", "LSX", "Tap"],
       "Buttons": {
-        "Start Moving": ["Macro", ["Keyboard","A","Tap"],["Keyboard","B","Tap"],["Keyboard","C","Tap"],["Keyboard","D","Tap"]],
-        "Add Speed": ["B"],
-        "Slow Down": ["C"],
-        "Stop": ["D"],
-        "Reverse": ["E"],
-        "After Reverse": ["F"],
-        "Jump": ["G"],
+        "Start Moving": ["Gamepad","B","Tap"],
+        "Add Speed": ["Gamepad","B","Tap"],
+        "Slow Down": ["Gamepad","B","Tap"],
+        "Stop": ["Gamepad","B","Tap"],
+        "Reverse": ["Gamepad","B","Tap"],
+        "After Reverse": ["Gamepad","B","Tap"],
+        "Jump": ["Gamepad","B","Tap"],
 
-        "Button1": ["MouseMove","X","Tap",300],
-        "Button2": ["Gamepad","Y","Multitap", 8],
-        "Button3": ["Gamepad","B","Tap"],
-        "Button4": ["Macro", ["Keyboard","A","Tap"],["Keyboard","B","Tap"],["Keyboard","C","Tap"],["Keyboard","D","Tap"]]
+        "Button1": ["Gamepad","A","Tap"],
+        "Button2": ["Gamepad","B","Tap"],
+        "Button3": ["Gamepad","X","Tap"],
+        "Button4": ["Gamepad","Y","Tap"]
+      }
+
+    },
+    {
+      "id": 0,
+      "Name": "SSO_Fake_analog",
+      "LED Color": [0, 0, 255],
+      "Rein Mode": ["Keyboard", "D", "A"],
+      "Buttons": {
+        "Start Moving": ["Keyboard","W","Tap"],
+        "Add Speed": ["Keyboard","W","Tap"],
+        "Slow Down": ["Keyboard","S","Tap"],
+        "Stop": ["Keyboard","X","Tap"],
+        "Reverse": ["Keyboard","S","Multitap", 8],
+        "After Reverse": ["Keyboard","W","Tap"],
+        "Jump": ["Keyboard","SPACE","Tap"],
+
+        "Button1": ["Keyboard","W","Tap",300],
+        "Button2": ["Keyboard","A","Tap", 8],
+        "Button3": ["Keyboard","S","Tap"],
+        "Button4": ["Keyboard","D","Tap"]
       }
 
     }

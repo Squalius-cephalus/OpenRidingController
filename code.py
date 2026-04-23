@@ -1,20 +1,26 @@
+import json
+
 import board
 import digitalio
 import neopixel
-import json
 
+from analog_output import AnalogHandler
+from digital_input import ButtonHandler
+from digital_output import DigitalHandler
+from horse_logic import HorseLogicHandler
 from reins_input import ReinsHandler
 from stirrups_input import StirrupsHandler
-from horse_logic import HorseLogicHandler
-from analog_output import AnalogHandler
-from digital_output import DigitalHandler
-from digital_input import ButtonHandler
-import time
+from output import OutputManager
+
+led = neopixel.NeoPixel(board.GP16, 1, brightness=0.3, auto_write=True)
 with open("/profiles.json", "r") as f:
     data = json.load(f)
 
-DEBUG = True
+with open("/settings.json", "r") as f:
+    settings = json.load(f)
 
+DEBUG = True
+loaded_settings = settings["settings"]
 loaded_profiles = data["profiles"]
 
 profile_button = digitalio.DigitalInOut(board.GP15)
@@ -43,92 +49,219 @@ button4.pull = digitalio.Pull.UP
 
 
 import time
-import board
-import pwmio
-
-
-
-
-onboard_led = neopixel.NeoPixel(board.GP16, 1, brightness=0.3, auto_write=True)
 
 setup_calibration = False
-analog_handler = AnalogHandler()
-digital_handler = DigitalHandler()
+
 button_handler = ButtonHandler(button1, button2, button3, button4)
+output_manager = OutputManager(loaded_settings["outputs"])
+
+class OnboardLED:
+    def __init__(self, neopixel_led):
+        self.led = neopixel_led
+        self.current_color = [255,255,255]
+
+    def change_color(self, color):
+        self.led[0] = color
+        self.current_color = color
+
+    def blocking_blink(self, color, speed=0.2, times=20):
+        original_color = self.current_color
+
+        for i in range(0,times):
+            self.led[0] = color
+            time.sleep(speed/2)
+            self.led[0] = [0,0,0]
+            time.sleep(speed/2)
+
+
+        self.led[0] = original_color
+
+
+
+    def get_color(self):
+        return self.current_color
+
 class ProfileManager:
-    def __init__(self, profiles, pixel):
+    def __init__(self, profiles, passed_led):
         self.profiles = profiles
-        self.pixel = pixel
+        self.led = passed_led
+
         self.current_index = 0
         self.current_profile = self.profiles[self.current_index]
         if DEBUG:
             print("Active profile:", self.current_profile["Name"])
-        self.pixel[0] = self.current_profile["LED Color"]
-        analog_handler.set_new_profile(self.current_profile)
-        digital_handler.set_new_profile(self.current_profile)
+        self.led.change_color(self.current_profile["LED Color"])
+        output_manager.set_new_profile(self.current_profile)
 
     def change_profile(self):
         self.current_index = (self.current_index + 1) % len(self.profiles)
         self.current_profile = self.profiles[self.current_index]
         if DEBUG:
             print("Active profile:", self.current_profile["Name"])
-        self.pixel[0] = self.current_profile["LED Color"]
-        analog_handler.set_new_profile(self.current_profile)
-        digital_handler.set_new_profile(self.current_profile)
+        self.led.change_color(self.current_profile["LED Color"])
+        output_manager.set_new_profile(self.current_profile)
+        output_manager.release_all()
 
 
 
         time.sleep(0.3)
 
 
-profile_manager = ProfileManager(loaded_profiles, onboard_led)
-reins_handler = ReinsHandler()
-stirrups_handler = StirrupsHandler()
+
+reins_handler = ReinsHandler(loaded_settings["reins"])
+stirrups_handler = StirrupsHandler(loaded_settings["stirrups"])
 horse_logic_handler = HorseLogicHandler()
+onboard_led = OnboardLED(led)
+profile_manager = ProfileManager(loaded_profiles, onboard_led)
 
-
-
+def set_settings():
+    pass
 
 def calibrate():
+    original_color = onboard_led.get_color()
+    stirrups_handler.update()
     stirrups_handler.calibrate()
+    reins_handler.update()
     reins_handler.calibrate()
+    output_manager.release_all()
+    onboard_led.blocking_blink([0,255,0], 0.4, 5)
 
 
+def steam_input_dance():
+    hold_time = 0.2
 
+    # Not pretty but this works, currently missing triggers because SteamInput needs analog trigger input.
+    # Currently, this setup only has four analog axis(two per stick) so two more is needed.
 
+    input_list = [["Gamepad", "A", "Hold",hold_time],
+                  ["Gamepad", "B", "Hold",hold_time],
+                  ["Gamepad", "X", "Hold",hold_time],
+                  ["Gamepad", "Y", "Hold",hold_time],
+                  ["Gamepad", "LEFT", "Hold",hold_time],
+                  ["Gamepad", "RIGHT", "Hold",hold_time],
+                  ["Gamepad", "UP", "Hold",hold_time],
+                  ["Gamepad", "DOWN", "Hold",hold_time],
 
+                  ["Joystick", "LSX", "Tap", 0],
+                  ["Joystick", "LSY", "Tap", 0],
+
+                  ["Gamepad", "LSB", "Hold",hold_time],
+
+                  ["Joystick", "RSX", "Tap", 0],
+                  ["Joystick", "RSY", "Tap", 0],
+
+                  ["Gamepad", "RSB", "Hold",hold_time],
+
+                  ["Gamepad", "LB", "Hold",hold_time],
+                  ["Joystick", "LT", "Tap", 0],
+                  ["Gamepad", "RB", "Hold",hold_time],
+                  ["Joystick", "RT", "Tap", 0],
+
+                  ["Gamepad", "BACK", "Hold",hold_time],
+                  ["Gamepad", "START", "Hold",hold_time],
+                  ["Gamepad", "HOME", "Hold",hold_time],
+                  ["Gamepad", "SHARE", "Hold",hold_time],
+                  ["Gamepad", "A", "Toggle"],
+                  ["Gamepad", "A", "ToggleOff"],
+
+                  ]
+
+    last_toggle = 0
+    input_send = False
+    original_color = onboard_led.get_color()
+    
+    print("SteamInput dance started")
+    time.sleep(0.5)
+    i = 0
+    sticks = ["LSX","LSY", "RSX", "RSY"]
+    while True:
+        current_time = time.monotonic()
+        if current_time - last_toggle >= 0.5:
+            last_toggle = current_time
+            onboard_led.change_color(original_color)
+            if not input_send:
+                onboard_led.change_color([0, 0, 0])
+                if input_list[i][0] == "Joystick":
+                    for ii in range(0,128):
+                        input_list[i][3] = ii*-1
+                        output_manager.press_key(input_list[i][0], input_list[i][1], input_list[i][3])
+                        time.sleep(0.01)
+                    time.sleep(0.2)
+                    output_manager.release_key(input_list[i][0], input_list[i][1])
+                    if input_list[i][1] in sticks:
+                        for ii in range(0,128):
+                            input_list[i][3] = ii
+                            output_manager.press_key(input_list[i][0], input_list[i][1], input_list[i][3])
+                            time.sleep(0.01)
+
+                        time.sleep(0.2)
+                        output_manager.release_key(input_list[i][0], input_list[i][1])
+                else:
+                    output_manager.parse_input(input_list[i], current_time)
+
+                i += 1
+                input_send = True
+            else:
+                input_send = False
+        output_manager.update({}, (0,0), current_time)
+        if  i >len(input_list)-1:
+            onboard_led.change_color(original_color)
+            output_manager.update({}, (0,0), current_time)
+            print("SteamInput dance done")
+            break
 
 
 def pause_inputs():
 
     last_toggle = 0
     blink = False
-    original_color = profile_manager.pixel[0]
+    original_color = onboard_led.get_color()
     time.sleep(0.5)
     print("Pause ON")
 
     while True:
         current_time = time.monotonic()
-        if now - last_toggle >= 0.5:
+
+
+
+        if current_time - last_toggle >= 0.5:
             last_toggle = current_time
-            blink = not blink
-            profile_manager.pixel[0] = [0, 0, 0] if blink else original_color
+            onboard_led.change_color(original_color)
+            if not blink:
+                onboard_led.change_color([0, 0, 0])
+                blink = True
+            else:
+                blink = False
+
+        # TODO: User needs to hold down the button to start SteamInput automapping
+        button_held = 0
+        while not profile_button.value:
+            button_held += 1
+            time.sleep(0.01)
+
+            if button_held >= 200:
+                onboard_led.blocking_blink([255, 0, 255])
+                time.sleep(0.5)
+                steam_input_dance()
+
 
         if not pause_button.value:
             time.sleep(0.5)
             print("Pause OFF")
-            profile_manager.pixel[0] = original_color
+            onboard_led.change_color(original_color)
             time.sleep(0.5)
             break
 
 
 while True:
 
-    now = time.monotonic()
+    current_time = time.monotonic()
 
     if not setup_calibration:
+
         calibrate()
         setup_calibration = True
+
 
     if not profile_button.value:
         time.sleep(0.1)
@@ -147,6 +280,8 @@ while True:
     if not pause_button.value:
         pause_inputs()
 
+
+    
     # Update states from inputs
     reins_handler.update()
     stirrups_handler.update()
@@ -162,10 +297,10 @@ while True:
     horse_logic_handler.update(combined_states)
 
 
+    # These will be separated to Gamepad, Mouse and Keyboard handlers. But one main "handler" calls them.
+    #analog_handler.update(horse_logic_handler.get_analog_states())
 
-    # Output Horse states to output
-    analog_handler.update(reins_handler.get_analog_states())
-    digital_handler.update(horse_logic_handler.get_states() | button_handler.get_states())
+    output_manager.update(horse_logic_handler.get_states() | button_handler.get_states(), horse_logic_handler.get_analog_states(), current_time)
 
 
 

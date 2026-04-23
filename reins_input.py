@@ -8,7 +8,7 @@ left_rein_input = AnalogIn(board.GP26)
 right_rein_input = AnalogIn(board.GP27)
 
 class ReinsHandler:
-    def __init__(self):
+    def __init__(self, settings):
         self.debug = True
         self.left_input = 0
         self.right_input = 0
@@ -19,11 +19,12 @@ class ReinsHandler:
         self.states = self.reset_states()
 
 
-        # TODO: Move these to own settings.json
-        self.pulled_threshold = 20
-        self.pulled_back_threshold = 300
-        self.lower_threshold = 10
-        self.pulled_time_threshold = 0.35
+        
+        self.pulled_threshold_low = settings["Threshold Low"]
+        self.pulled_threshold_mid = settings["Threshold Mid"]
+        self.pulled_threshold_high = settings["Threshold High"]
+        self.reins_dead_zone = settings["Dead Zone"]
+        self.pulled_time_threshold = settings["Time Threshold"]
 
         self.internal_states = {
         "reins_pulled_time": 0.0,
@@ -37,6 +38,7 @@ class ReinsHandler:
         self.states = self.reset_states()
 
 
+
         # Apply calibration offset
         self.left_input = left_rein_input.value-self.left_offset
         self.right_input = right_rein_input.value-self.right_offset
@@ -47,28 +49,30 @@ class ReinsHandler:
         #if self.debug: print(f"Left input: {self.left_input:6d}, Right input: {self.right_input:6d}")
 
         # is reins pulled?
-        if self.right_input + self.left_input > self.lower_threshold:
-            self.states["reins_pulled_currently"] = True
+        if self.right_input > self.reins_dead_zone and self.left_input > self.reins_dead_zone:
             if self.internal_states["reins_timer_on"] is False:
                 self.internal_states["reins_pulled_time"] = current_time
                 self.internal_states["reins_timer_on"] = True
 
+        if self.right_input > self.pulled_threshold_mid and self.left_input > self.pulled_threshold_mid:
+            self.states["reins_pulled_currently"] = True
 
-        if self.left_input >= self.pulled_threshold and self.right_input >= self.pulled_threshold:
+
+        if self.left_input >= self.pulled_threshold_low and self.right_input >= self.pulled_threshold_low:
             self.internal_states["reins_pulled"] = True
 
         # How fast reins have been pulled?
-        if self.right_input + self.left_input <= self.lower_threshold and self.internal_states["reins_timer_on"]:
+        if self.right_input + self.left_input < self.reins_dead_zone and self.internal_states["reins_timer_on"]:
             if self.internal_states["reins_pulled"] == True:
                 time_taken = current_time-self.internal_states["reins_pulled_time"]
                 if self.pulled_time_threshold > time_taken:
-                    #print("Success! Reins pulled! Horse, slow down")
+                    print("Success! Reins pulled! Horse, slow down")
                     self.states["reins_pulled"] = True
                 self.internal_states["reins_pulled"] = False
             self.internal_states["reins_timer_on"] = False
 
         # Reins pulled back far, stop that horse!
-        if self.left_input >= self.pulled_back_threshold and self.right_input >= self.pulled_back_threshold:
+        if self.left_input >= self.pulled_threshold_high and self.right_input >= self.pulled_threshold_high:
             self.internal_states["reins_pulled"] = False
             self.states["reins_pulled_back"] = True
             self.left_input = 0
@@ -78,7 +82,7 @@ class ReinsHandler:
     def get_states(self):
         for i, value in self.states.items():
             if value != self.previous_states[i]:
-                #print(i, "Has changed", value)
+                print(i, "Has changed", value)
                 self.previous_states[i] = value
 
         return self.states

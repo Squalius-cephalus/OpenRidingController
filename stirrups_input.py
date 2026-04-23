@@ -8,7 +8,7 @@ left_stirrup_input = AnalogIn(board.GP28)
 right_stirrup_input = AnalogIn(board.GP29)
 
 class StirrupsHandler:
-    def __init__(self):
+    def __init__(self, settings):
         self.debug = True
         self.left_input = 0
         self.right_input = 0
@@ -20,13 +20,12 @@ class StirrupsHandler:
         self.min = 0
         self.max = 512
 
-        # TODO: Move these to own settings.json
         # If sensor is on front, set inverted
-        self.inverted = True
-        self.dead_zone = 20
-        self.forward_threshold = 100
-        self.backward_threshold = 100
-        self.timer_threshold = 1.0
+        self.inverted = settings["Inverted"]
+        self.dead_zone = settings["Dead Zone"]
+        self.forward_threshold = settings["Forward Threshold"]
+        self.backward_threshold = settings["Backward Threshold"]
+        self.timer_threshold = settings["Threshold Timer"]
 
 
         self.previous_states = states = {
@@ -94,6 +93,7 @@ class StirrupsHandler:
         elif self.states["stirrup_left_backward_hold"] and self.states["stirrup_right_backward_hold"]:
             self.states["both_backward"] = True
 
+        #print(self.left_input, self.right_input)
 
 
 
@@ -103,13 +103,14 @@ class StirrupsHandler:
         dead_zone_max = neutral + self.dead_zone
 
 
-        # print(dead_zone_min, dead_zone_max, stirrup_input)
+
 
         if dead_zone_min <= stirrup_input <= dead_zone_max:
             if self.states[f"stirrup_{side}_forward_hold"]:
                 time_taken = current_time - internal_states["time"]
                 if time_taken < self.timer_threshold:
                     self.states[f"stirrup_{side}_forward"] = True
+                    print(f"stirrup_{side}_forward")
                 internal_states["timer_on"] = False
             elif self.states[f"stirrup_{side}_backward_hold"]:
                 time_taken = current_time - internal_states["time"]
@@ -126,6 +127,11 @@ class StirrupsHandler:
                 internal_states["time"] = current_time
                 internal_states["timer_on"] = True
 
+
+        if stirrup_input > self.forward_threshold+neutral:
+            self.states[f"stirrup_{side}_forward_hold"] = True
+        elif stirrup_input < neutral-self.backward_threshold:
+            self.states[f"stirrup_{side}_backward_hold"] = True
 
         if stirrup_input > self.forward_threshold+neutral:
             self.states[f"stirrup_{side}_forward_hold"] = True

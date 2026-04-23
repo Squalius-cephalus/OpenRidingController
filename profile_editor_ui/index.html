@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Advanced Profile Editor</title>
+
+<link rel="stylesheet" href="style.css">
+
+
+</head>
+<body>
+  
+
+<div class="panel">
+  <h1>Horse Game Controller Mapping Editor</h1>
+  <h3>Profiles</h3>
+  <select id="profileList"></select>
+  <button onclick="addProfile()">Add</button>
+  <button onclick="deleteProfile()">Delete</button>
+  <button onclick="loadJSONFromUser()">Load JSON</button>
+</div>
+
+<div class="panel">
+
+  <h3>Edit</h3>
+
+  <label>Profile Name</label>
+  <input id="name">
+
+  <label>LED Color</label>
+  <input type="color" id="color">
+
+  <h3>Reins Mode</h3>
+  <div id="reinContainer"></div>
+
+  <h4>Buttons</h4>
+  <div id="buttons" class="buttons"></div>
+</div>
+
+<div class="panel">
+  <h3>Export</h3>
+  <textarea id="output" rows="5" cols="80"></textarea>
+  <br>
+  <button onclick="reviewJSON()">Review JSON</button>
+  <button onclick="downloadJSON()">Download JSON</button>
+</div>
+
+<script src="script.js"></script>
+
+</body>
+</html>

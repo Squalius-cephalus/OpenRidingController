@@ -6,6 +6,8 @@ class HorseLogicHandler:
         self.previous_states = self.reset_states()
         self.reins_left = 0
         self.reins_right = 0
+        self.stirrup_left_last_time = 4
+        self.stirrup_right_last_time = 8
 
         self.ready_to_jump = False
         self.ready_to_reverse = False
@@ -16,6 +18,7 @@ class HorseLogicHandler:
         self.jump_time = 0
         self.jump_toggle =False
         self.jump_time_threshold = 2
+        self.reins_pulled_currently = False
 
 
 
@@ -34,6 +37,7 @@ class HorseLogicHandler:
 
         self.states = self.reset_states()
         current_time = time.monotonic()
+        self.reins_pulled_currently = input_states["reins_pulled_currently"]
 
 
         if input_states['reins_pulled_back']:
@@ -49,19 +53,30 @@ class HorseLogicHandler:
 
 
 
-                if not self.ready_to_jump:
-                    self.handle_speed(input_states)
+
+                self.handle_speed(input_states)
     def handle_jump(self, input_states, current_time):
 
-        if input_states['stirrup_right_forward_hold'] and not self.ready_to_jump:
-            self.ready_to_jump = True
-            print("ready to jump")
-        if not input_states['stirrup_right_forward_hold']:
-            self.ready_to_jump = False
+        if input_states['stirrup_left_forward']:
+            self.stirrup_left_last_time = current_time
+            self.jump_toggle = True
+        if input_states['stirrup_right_forward']:
+            self.stirrup_right_last_time = current_time
+            self.jump_toggle = True
 
-        if input_states['stirrup_left_forward'] and self.ready_to_jump:
-            self.ready_to_jump = False
-            self.states["Jump"] = True
+        if self.jump_toggle:
+            left_time = current_time - self.stirrup_left_last_time
+            right_time = current_time - self.stirrup_right_last_time
+
+            if abs(left_time-right_time) < 1:
+                self.states["Jump"] = True
+                self.jump_toggle = False
+
+
+
+
+
+
 
 
 
@@ -77,7 +92,7 @@ class HorseLogicHandler:
             self.states['Slow Down'] = True
 
     def handle_reverse(self, input_states):
-        if input_states["reins_pulled_currently"]:
+        if input_states["reins_pulled_currently"] and not self.ready_to_jump:
             self.ready_to_reverse = True
             if input_states["stirrup_left_forward"]:
                 if not self.in_reverse:
@@ -92,7 +107,7 @@ class HorseLogicHandler:
     def get_states(self):
         for i, value in self.states.items():
             if value != self.previous_states[i]:
-                #print(i, "Has changed", value)
+                print(i, "Has changed", value)
                 self.previous_states[i] = value
 
         return self.states
@@ -100,6 +115,16 @@ class HorseLogicHandler:
     def update_analog(self, analog_input):
         self.reins_left = analog_input[0]
         self.reins_right = analog_input[1]
+        if self.states['Stop']:
+            print("stop stop stop")
+
+            self.reins_left = 0
+            self.reins_right = 0
+
+    def get_analog_states(self):
+
+
+        return self.reins_left, self.reins_right
 
     @staticmethod
     def reset_states():
