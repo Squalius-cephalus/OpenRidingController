@@ -7,9 +7,8 @@ gamepad = GamepadOutput()
 import adafruit_nunchuk
 import board
 import busio
-import time
-i2c = busio.I2C(board.GP1, board.GP0)
-nc = adafruit_nunchuk.Nunchuk(i2c)
+
+
 
 
 class OutputManager:
@@ -19,20 +18,39 @@ class OutputManager:
         self.hold_keys = {}
         self.toggle_keys = {}
         self.reserved_keys = []
-        self.last_time = 0
+        self.last_nunchuck_flick = 0
         self.rein_mode = [""]
         self.nunchuck_mode = [""]
         self.keyboard_reins_threshold = settings["KeyboardReinsThreshold"]
         self.gamepad_reins_threshold = settings["GamepadReinsThreshold"]
         self.tap_time = settings["Tap Time"]
 
+        # TODO: Move these to own class!!
+
+        try:
+            self.i2c = busio.I2C(board.GP1, board.GP0)
+            self.nc = adafruit_nunchuk.Nunchuk(self.i2c)
+            self.nunchuck_connected = True
+            print("Nunchuck controller detected!")
+        except Exception:
+            self.i2c = None
+            self.nc = None
+            self.nunchuck_connected = False
+
+
         self.nunchuck_c_released = False
         self.nunchuck_z_released = False
-        self.nunchuck_connected = True
+        
+        self.last_x_nunchuck = 700
+        self.last_nunchuck_flick = 0
+
+
+        
 
     def update(self, states, analog_amount, current_time):
         if self.nunchuck_connected:
-            states = states | self.handle_nunchuck()
+            states = states | self.handle_nunchuck() | self.detect_flick(current_time)
+
         
         if self.reserved_keys:
             if not self.hold_keys:
@@ -55,6 +73,7 @@ class OutputManager:
 
         self.release_hold_keys(current_time)
         self.update_reins_output(current_time, analog_amount)
+        
         
 
     def parse_input(self, button, current_time):
@@ -156,6 +175,7 @@ class OutputManager:
                 print("Profile has no buttons! Fix your profile.json!")
 
 
+
     def release_all(self):
         mouse.release_all()
         keyboard.release_all()
@@ -185,22 +205,33 @@ class OutputManager:
 
 
     def handle_nunchuck(self):
-        x, y = nc.joystick
-        ax, ay, az = nc.acceleration
+        # TODO: move i2c stuff to own function with proper error handling
+
+        try:
+            joystick_x, joystick_y = self.nc.joystick
+            button_c = self.nc.buttons.C
+            button_z = self.nc.buttons.Z
+        except Exception:
+            print("Nunchuck disconnected. Reconnecting requires reboot!")
+            self.nunchuck_connected = False
+            return {}
+
+        
+        #ax, ay, az = self.nc.acceleration
         deadzone = 5
         nunchuck_button_states = {
             "Nunchuck C Button": False,
             "Nunchuck Z Button": False,
         }
 
-        if nc.buttons.C:
+        if button_c:
             nunchuck_button_states["Nunchuck C Button"] = True
-        if nc.buttons.Z:
+        if button_z:
             nunchuck_button_states["Nunchuck Z Button"] = True
 
 
-        centered_x = x - 128
-        centered_y = y - 128
+        centered_x = joystick_x - 128
+        centered_y = joystick_y - 128
 
         if abs(centered_x) < deadzone:
             centered_x = 0
@@ -230,14 +261,42 @@ class OutputManager:
             y_axis = stick+"Y"
 
             gamepad.move(x_axis, centered_x)
-            gamepad.move(y_axis, centered_y)
+            gamepad.move(y_axis, -centered_y)
 
         return nunchuck_button_states
 
             
   
+    
+    def detect_flick(self, current_time):
+        # TODO: merge duplicate code
+        nunchuck_flick_states = {
+            "Nunchuck Left Flick": False,
+            "Nunchuck Right Flick": False,
+        }
+        try:
+            x, y, z = self.nc.acceleration
+        except Exception:
+            print("Nunchuck disconnected. Reconnecting requires reboot!")
+            self.nunchuck_connected = False
+            return {}
 
+        # TODO: Move to settings.json
+        flick_threshold = 450
 
+        accel_x = x - self.last_x_nunchuck
 
+        if (current_time - self.last_nunchuck_flick) > 0.2:
+            if abs(accel_x) > flick_threshold:
+                if accel_x >0:
+                    nunchuck_flick_states["Nunchuck Right Flick"] = True
+                    print(accel_x)
+                else:
+                    nunchuck_flick_states["Nunchuck Left Flick"] = True
+                self.last_nunchuck_flick = current_time
+
+        self.last_x_nunchuck = x
+
+        return nunchuck_flick_states
 
 
