@@ -50,7 +50,7 @@ class MouseOutput:
             if hold == "Hold" and combined>self.dead_zone:
                 self.press(mouse_button)
             
-
+            # Returns cursor to virtual zero position
             if returning:
                 movement = self.update_axis(movement)
                 if abs(movement)>0:
@@ -62,9 +62,10 @@ class MouseOutput:
                     self.move("X",movement)
                     self.previous = movement
 
-            if hold == "Hold" and abs(combined) < 6 and self.mouse_moved:
+            if hold == "Hold" and abs(combined) < self.dead_zone and self.mouse_moved:
                 self.release(mouse_button)
                 self.mouse_moved = False
+
 
 
     def release_all(self):

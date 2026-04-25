@@ -5,7 +5,7 @@
       "Name": "SSO",
       "LED Color": [174, 50, 236],
       "Rein Mode": ["MouseReturning", "LEFT_BUTTON", "Hold"],
-      "Nunchuck Mode": ["Mouse", 1, "RS"],
+      "Nunchuck Mode": ["Mouse", 0.5, "RS"],
       "Buttons": {
         "Add Speed": ["Keyboard","W","Tap"],
         "Slow Down": ["Keyboard","S","Tap"],
@@ -50,7 +50,10 @@
         "Button4": ["Gamepad","LSB","Hold", 0.5],
 
         "Nunchuck C Button": ["Joystick","LT","Hold", 0.05, -128],
-        "Nunchuck Z Button": ["Joystick","RT","Hold", 0.05, -128]
+        "Nunchuck Z Button": ["Joystick","RT","Hold", 0.05, -128],
+        "Nunchuck Left Flick": ["Gamepad","B","Tap", 0.01],
+        "Nunchuck Right Flick": ["Gamepad","LB","Toggle", 1]
+        
       }
 
     },
@@ -75,7 +78,10 @@
         "Button4": ["Keyboard","D","Tap"],
 
         "Nunchuck C Button": ["MouseButtons","LEFT_BUTTON","Hold", 0.01],
-        "Nunchuck Z Button": ["MouseButtons","RIGHT_BUTTON","Hold", 0.01]
+        "Nunchuck Z Button": ["MouseButtons","RIGHT_BUTTON","Hold", 0.01],
+        "Nunchuck Left Flick": ["MouseButtons","LEFT_BUTTON","Hold", 0.01],
+        "Nunchuck Right Flick": ["MouseButtons","RIGHT_BUTTON","Hold", 0.01]
+        
       }
 
     }

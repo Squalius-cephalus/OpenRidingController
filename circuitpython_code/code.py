@@ -55,6 +55,7 @@ setup_calibration = False
 button_handler = ButtonHandler(button1, button2, button3, button4)
 output_manager = OutputManager(loaded_settings["outputs"])
 
+
 class OnboardLED:
     def __init__(self, neopixel_led):
         self.led = neopixel_led
@@ -217,6 +218,7 @@ def pause_inputs():
     blink = False
     original_color = onboard_led.get_color()
     time.sleep(0.5)
+    output_manager.release_all()
     print("Pause ON")
 
     while True:
@@ -296,9 +298,8 @@ while True:
     horse_logic_handler.update_analog(reins_handler.get_analog_states())
     horse_logic_handler.update(combined_states)
 
-
     # These will be separated to Gamepad, Mouse and Keyboard handlers. But one main "handler" calls them.
-    #analog_handler.update(horse_logic_handler.get_analog_states())
+
 
     output_manager.update(horse_logic_handler.get_states() | button_handler.get_states(), horse_logic_handler.get_analog_states(), current_time)
 
