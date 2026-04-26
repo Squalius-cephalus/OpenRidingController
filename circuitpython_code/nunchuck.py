@@ -3,8 +3,6 @@ import board
 import busio
 
 
-
-
 class NunchuckHandler:
     def __init__(self):
         try:
@@ -62,11 +60,11 @@ class NunchuckHandler:
 
         centered_x = joystick_x - 128
         centered_y = joystick_y - 128
-
-        if abs(centered_x) < deadzone:
-            centered_x = 0
-        if abs(centered_y) < deadzone:
-            centered_y = 0
+        if self.nunchuck_mode[0] == "Mouse":
+            if abs(centered_x) < deadzone:
+                centered_x = 0
+            if abs(centered_y) < deadzone:
+                centered_y = 0
 
         try:
             sensitivity = self.nunchuck_mode[1]
@@ -76,20 +74,24 @@ class NunchuckHandler:
         centered_x = int(centered_x * sensitivity)
         centered_y = int(centered_y * sensitivity)
         
-        if abs(centered_x)+abs(centered_y)>0:
-            if self.nunchuck_mode[0] == "Mouse":
-                mouse.move_xy(centered_x, -centered_y)
-            if self.nunchuck_mode[0] == "Joystick":
         
-                try:
-                    stick = self.nunchuck_mode[2]
-                except IndexError:
-                    stick = "LS"
+        if self.nunchuck_mode[0] == "Mouse":
+            if abs(centered_x)+abs(centered_y)>0:
+                mouse.move_xy(centered_x, -centered_y)
+        else:
+    
+            try:
+                stick = self.nunchuck_mode[2]
+            except IndexError:
+                stick = "LS"
 
-                x_axis = stick+"X"
-                y_axis = stick+"Y"
-                gamepad.move(x_axis, int(centered_x*sensitivity))
-                gamepad.move(y_axis, int(-centered_y*sensitivity))
+            x_axis = stick+"X"
+            y_axis = stick+"Y"
+
+            if self.nunchuck_mode[0] == "Joystick":
+
+                gamepad.move(x_axis, centered_x)
+                gamepad.move(y_axis, -centered_y)
 
         return nunchuck_button_states
 

@@ -91,7 +91,7 @@ class Gamepad:
         self.press_buttons(*buttons)
         self.release_buttons(*buttons)
 
-    def move_joysticks(self, x=None, y=None, z=None, r_z=None,rx=None, ry=None):
+    def move_joysticks(self, x=None, y=None, z=None, r_z=None,r_x=None, r_y=None):
         """Set and send the given joystick values.
         The joysticks will remain set with the given values until changed
 
@@ -117,10 +117,10 @@ class Gamepad:
             self._joy_z = self._validate_joystick_value(z)
         if r_z is not None:
             self._joy_r_z = self._validate_joystick_value(r_z)
-        if rx is not None:
-            self._joy_rx = self._validate_joystick_value(rx)
-        if ry is not None:
-            self._joy_ry = self._validate_joystick_value(ry)
+        if r_x is not None:
+            self._joy_rx = self._validate_joystick_value(r_x)
+        if r_y is not None:
+            self._joy_ry = self._validate_joystick_value(r_y)
         self._send()
 
     def reset_all(self):

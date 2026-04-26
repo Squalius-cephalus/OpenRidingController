@@ -2,9 +2,15 @@ from keyboard_output import KeyboardOutput
 from mouse_output import MouseOutput
 from gamepad_output import GamepadOutput
 from nunchuck import NunchuckHandler
+import board
+
+from uart_logic import UARTLogic
+
+uart_thing = UARTLogic(board.GP12, 9600)
+
 keyboard = KeyboardOutput()
 mouse = MouseOutput()
-gamepad = GamepadOutput()
+gamepad = GamepadOutput(uart_thing)
 nunchuck_handler = NunchuckHandler()
 
 
@@ -34,6 +40,12 @@ class OutputManager:
             nunchuck_handler.update(current_time, mouse, gamepad)
             states = states | nunchuck_handler.get_states()
 
+        
+        
+
+
+        
+
 
         
         if self.reserved_keys:
@@ -57,6 +69,7 @@ class OutputManager:
 
         self.release_hold_keys(current_time)
         self.update_reins_output(current_time, analog_amount)
+        gamepad.uart_object.update()
         
         
 
@@ -134,6 +147,7 @@ class OutputManager:
             gamepad.move(key,0)
 
 
+
     def press_key(self, mode, key, analog_value):
         print(mode, key, "pressed")
         if mode == "Keyboard":
@@ -188,5 +202,8 @@ class OutputManager:
             analog_value = analog_value[1]-analog_value[0]
             axis = self.rein_mode[1]
             gamepad.move(axis, analog_value)
+        elif self.rein_mode[0] == "UART":
+            analog_value = analog_value[1]-analog_value[0]
+            axis = self.rein_mode[1]
 
 
