@@ -4,7 +4,7 @@ import board
 
 
 class UARTLogic:
-    def __init__(self, pin, baudrate=115200, header=[0xAA, 0x55], update_freq=2):
+    def __init__(self, pin, baudrate=115200, header=[0xAA, 0x55], update_freq=20):
         
 
         self.button_states = []
@@ -53,6 +53,9 @@ class UARTLogic:
         for button in buttons:
             self._validate_button_number(button)
             self.button_states[button] = False
+
+
+
 
     def release_all_buttons(self):
         for i in range(0,16):

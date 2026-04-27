@@ -1,36 +1,9 @@
-import usb_hid
-from hid_gamepad import Gamepad
 from adafruit_simplemath import map_range
 
-
-class GamepadOutput:
+class UARTOutput:
     def __init__(self, uart_object=None):
-        self.gamepad = Gamepad(usb_hid.devices)
-        self.uart_enabled = False
 
-        if uart_object != None:
-            self.uart_object = uart_object
-            self.uart_enabled = True
-
-        self.gamepad_map = {
-            "A": 1,
-            "B": 2,
-            "X": 3,
-            "Y": 4,
-            "LB": 5,
-            "RB": 6,
-            "BACK": 7,
-            "START": 8,
-            "LSB": 9,
-            "RSB": 10,
-            "UP": 11,
-            "DOWN": 12,
-            "LEFT": 13,
-            "RIGHT": 14,
-            "HOME": 15,
-            "SHARE": 16
-
-        }
+        self.gamepad = uart_object
 
         self.uart_map = {
             "Y": 0,
@@ -62,7 +35,7 @@ class GamepadOutput:
         }
 
 
-    def update_uart(self):
+    def update(self):
         self.uart_thing.update()
 
     def press(self, key):
@@ -76,6 +49,7 @@ class GamepadOutput:
 
 
     def move(self, axis, analog_value):
+        analog_value = int(map_range(analog_value, -127, 127, 0, 255))
 
         mapping = {
             None: ("x", analog_value),
@@ -94,18 +68,13 @@ class GamepadOutput:
             else:
                 self.press(axis)
             return
-            
-
+        
         if analog_value > 127: 
             analog_value = 127 
         elif analog_value < -127: 
             analog_value = -127
 
-
-
-        if axis not in mapping:
-            print("Unknown Analog axis:", axis)
-            return
+        
 
         send_axis, value = mapping[axis]
 
@@ -113,18 +82,12 @@ class GamepadOutput:
 
 
     def _get_gamepad_code(self, key_name):
-        key = self.gamepad_map.get(key_name.upper())
+        key = self.uart_map.get(key_name.upper())
         if key is None:
-            print("Unknown gamepad key", key_name.upper())
+            print("Unknown UART key", key_name.upper())
             return 1
         return key
     
-    def _get_uart_code(self, key_name):
-        key = self.uart_map.get(key_name.upper())
-        if key is None:
-            print("Unknown uart key", key_name.upper())
-            return 1
-        return key
     
     def reins_output(self, left_key, right_key, threshold, analog_value):
         left = analog_value[0]
@@ -132,6 +95,7 @@ class GamepadOutput:
 
         if left >= threshold and left > right:
             self.press(left_key)
+            
         else:
             self.release(left_key)
 

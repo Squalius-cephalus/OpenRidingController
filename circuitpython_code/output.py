@@ -3,10 +3,38 @@ from mouse_output import MouseOutput
 from gamepad_output import GamepadOutput
 from nunchuck import NunchuckHandler
 
-keyboard = KeyboardOutput()
-mouse = MouseOutput()
-gamepad = GamepadOutput()
+from uart_logic import UARTLogic
+from uart_output import UARTOutput
+import supervisor
+import board
+
 nunchuck_handler = NunchuckHandler()
+usb_connected = supervisor.runtime.usb_connected
+
+
+
+class DummyOutput:
+    def press(self, *args):
+        pass
+    def release(self, *args):
+        pass
+    def move(self, *args, **kwargs):
+        pass
+    def release_all(self, *args, **kwargs):
+        pass
+    def reins_output(self, *args, **kwargs):
+        pass
+
+if usb_connected:
+    keyboard = KeyboardOutput()
+    mouse = MouseOutput()
+    gamepad = GamepadOutput()
+else:
+    keyboard = DummyOutput()
+    mouse = DummyOutput()
+    uart_logic = UARTLogic(board.GP8)
+    gamepad = UARTOutput(uart_logic)
+
 
 
 DEVICES = {
@@ -60,6 +88,8 @@ class OutputManager:
         self.release_hold_keys(current_time)
         self.update_reins_output(current_time, reins_analog_amount)
         self.update_nunchuck_joystick_output()
+        if not usb_connected:
+            uart_logic.update()
 
     def parse_input(self, button, current_time):
 
@@ -134,7 +164,7 @@ class OutputManager:
     def release_key(self, mode, key):
         device = DEVICES.get(mode)
 
-        print(mode, key, "pressed")
+        print(mode, key, "released")
 
         if hasattr(device, "move"):
             device.move(key, 0)
