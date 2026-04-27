@@ -1,88 +1,352 @@
 {
   "profiles": [
     {
-      "id": 0,
       "Name": "SSO",
-      "LED Color": [174, 50, 236],
-      "Rein Mode": ["MouseReturning", "LEFT_BUTTON", "Tap"],
-      "Nunchuck Mode": ["Mouse", 0.5, "RS"],
+      "LED Color": [
+        174,
+        50,
+        236
+      ],
+      "Rein Mode": {
+        "Mode": "Mouse",
+        "Mouse Behaviour": "Returning",
+        "Mouse Button": "LEFT_BUTTON",
+        "Mouse Action": "Hold",
+        "Sensitivity": 1
+      },
+      "Nunchuck Mode": {
+        "Mode": "Mouse",
+        "Sensitivity": 1
+      },
       "Buttons": {
-        "Add Speed": ["Keyboard","W","Tap"],
-        "Slow Down": ["Keyboard","S","Tap"],
-        "Stop": ["Keyboard","X","Tap"],
-        "Reverse": ["Keyboard","S","Multitap", 3],
-        "After Reverse": ["Keyboard","W","Tap"],
-        "Jump": ["Keyboard","SPACE","Tap"],
-        "Right Backward": ["Keyboard","D","Tap"],
-
-        "Button1": ["MouseButtons","RIGHT_BUTTON","Tap"],
-        "Button2": ["MouseButtons","LEFT_BUTTON","Tap"],
-        "Button3": ["Keyboard","M","Tap"],
-        "Button4": ["Keyboard","ESC","Tap"],
-
-        "Nunchuck C Button": ["MouseButtons","RIGHT_BUTTON","Hold", 0.01],
-        "Nunchuck Z Button": ["MouseButtons","LEFT_BUTTON","Hold", 0.01],
-        "Nunchuck Left Flick": ["MouseButtons","LEFT_BUTTON","Hold", 0.01],
-        "Nunchuck Right Flick": ["MouseButtons","RIGHT_BUTTON","Hold", 0.01]
-        
-
+        "Add Speed": {
+          "Mode": "Keyboard",
+          "Keycode": "W",
+          "Action": "Tap"
+        },
+        "Slow Down": {
+          "Mode": "Keyboard",
+          "Keycode": "S",
+          "Action": "Tap"
+        },
+        "Stop": {
+          "Mode": "Keyboard",
+          "Keycode": "X",
+          "Action": "Tap"
+        },
+        "Reverse": {
+          "Mode": "Keyboard",
+          "Keycode": "S",
+          "Action": "Tap"
+        },
+        "After Reverse": {
+          "Mode": "Keyboard",
+          "Keycode": "S",
+          "Action": "Tap"
+        },
+        "Jump": {
+          "Mode": "Keyboard",
+          "Keycode": "SPACE",
+          "Action": "Tap"
+        },
+        "Right Backward": {
+          "Mode": "Keyboard",
+          "Keycode": "ESCAPE",
+          "Action": "Tap"
+        },
+        "Button1": {
+          "Mode": "Mouse",
+          "Keycode": "LEFT_BUTTON",
+          "Action": "Tap"
+        },
+        "Button2": {
+          "Mode": "Keyboard",
+          "Keycode": "A",
+          "Action": "Multitap",
+          "Value": 5
+        },
+        "Button3": {
+          "Mode": "Keyboard",
+          "Keycode": "Mouse",
+          "Action": "Mouse"
+        },
+        "Button4": {
+          "Mode": "Macro",
+          "Macro Inputs":
+          [[{
+          "Mode": "Mouse",
+          "Keycode": "Y",
+          "Action": "Tap",
+          "Analog Value": 20
+        }],
+        [{
+          "Mode": "Mouse",
+          "Keycode": "X",
+          "Action": "Tap",
+          "Analog Value": 20
+        }],
+      [{
+          "Mode": "Mouse",
+          "Keycode": "X",
+          "Action": "Tap",
+          "Analog Value": -20
+        }]
+      
+      
+      ]
+        },
+        "Nunchuck C Button": {
+          "Mode": "Mouse",
+          "Keycode": "LEFT_BUTTON",
+          "Action": "Tap"
+        },
+        "Nunchuck Z Button": {
+          "Mode": "Keyboard",
+          "Keycode": "Mouse",
+          "Action": "Mouse"
+        },
+        "Nunchuck Left Flick": {
+          "Mode": "Keyboard",
+          "Keycode": "Mouse",
+          "Action": "Mouse"
+        },
+        "Nunchuck Right Flick": {
+          "Mode": "Keyboard",
+          "Keycode": "Mouse",
+          "Action": "Mouse"
+        }
       }
-
     },
+
     {
-      "id": 0,
       "Name": "RDR2",
-      "LED Color": [255, 0, 0],
-      "Rein Mode": ["Joystick", "LSX", "Tap"],
-      "Nunchuck Mode": ["Joystick", 1, "RS"],
+      "LED Color": [
+        255,
+        0,
+        0
+      ],
+      "Rein Mode": {
+        "Mode": "Joystick",
+        "Axis": "LSX",
+        "Sensitivity": 1
+      },
+      "Nunchuck Mode": {
+        "Mode": "Joystick",
+        "Sensitivity": 1,
+        "Axis": "RS"
+      },
       "Buttons": {
-        "Add Speed": ["Macro", ["Joystick","LSY","ToggleOn", 1, -128],["Gamepad","A","Tap"]],
-        "Slow Down": ["Gamepad","RB","Tap"],
-        "Stop": ["Macro", ["Joystick","LSY","ToggleOff", 256],["Gamepad","RB","Hold", 1]],
-        "Reverse": ["Joystick","LSY","ToggleOn", 1, 256],
-        "After Reverse": ["Joystick","LSY","ToggleOff", 256],
-        "Jump": ["Gamepad","A","Tap"],
-        "Right Backward": ["Gamepad","A","Tap"],
-
-        "Button1": ["Gamepad","LB","Hold", 1],
-        "Button2": ["Gamepad","LB","Tap"],
-        "Button3": ["Gamepad","LSB","Hold", 0.5],
-        "Button4": ["Gamepad","LSB","Hold", 0.5],
-
-        "Nunchuck C Button": ["Joystick","LT","Hold", 0.05, -128],
-        "Nunchuck Z Button": ["Joystick","RT","Hold", 0.05, -128],
-        "Nunchuck Left Flick": ["Gamepad","B","Tap", 0.01],
-        "Nunchuck Right Flick": ["Gamepad","LB","Toggle", 1]
-        
+        "Add Speed": [
+          "Macro",
+          [
+            "Joystick",
+            "LSY",
+            "ToggleOn",
+            1,
+            -128
+          ],
+          [
+            "Gamepad",
+            "A",
+            "Tap"
+          ]
+        ],
+        "Slow Down": [
+          "Gamepad",
+          "RB",
+          "Tap"
+        ],
+        "Stop": [
+          "Macro",
+          [
+            "Joystick",
+            "LSY",
+            "ToggleOff",
+            256
+          ],
+          [
+            "Gamepad",
+            "RB",
+            "Hold",
+            1
+          ]
+        ],
+        "Reverse": [
+          "Joystick",
+          "LSY",
+          "ToggleOn",
+          1,
+          256
+        ],
+        "After Reverse": [
+          "Joystick",
+          "LSY",
+          "ToggleOff",
+          256
+        ],
+        "Jump": [
+          "Gamepad",
+          "A",
+          "Tap"
+        ],
+        "Right Backward": [
+          "Gamepad",
+          "A",
+          "Tap"
+        ],
+        "Button1": [
+          "Gamepad",
+          "LB",
+          "Hold",
+          1
+        ],
+        "Button2": [
+          "Gamepad",
+          "LB",
+          "Tap"
+        ],
+        "Button3": [
+          "Gamepad",
+          "LSB",
+          "Hold",
+          0.5
+        ],
+        "Button4": [
+          "Gamepad",
+          "LSB",
+          "Hold",
+          0.5
+        ],
+        "Nunchuck C Button": [
+          "Joystick",
+          "LT",
+          "Hold",
+          0.05,
+          -128
+        ],
+        "Nunchuck Z Button": [
+          "Joystick",
+          "RT",
+          "Hold",
+          0.05,
+          -128
+        ],
+        "Nunchuck Left Flick": [
+          "Gamepad",
+          "B",
+          "Tap",
+          0.01
+        ],
+        "Nunchuck Right Flick": [
+          "Gamepad",
+          "LB",
+          "Toggle",
+          1
+        ]
       }
-
     },
     {
       "id": 0,
-      "Name": "Switch Test",
-      "LED Color": [0, 255, 0],
-      "Rein Mode": ["Joystick", "LSX", "Tap"],
-      "Nunchuck Mode": ["Joystick", 1, "RS"],
+      "Name": "Riding Star 3",
+      "LED Color": [
+        0,
+        0,
+        236
+      ],
+      "Rein Mode": {
+        "Mode": "Mouse",
+        "Sensitivity": 0.1
+      },
+      "Nunchuck Mode": {
+        "Mode": "Mouse",
+        "Sensitivity": 1
+      },
       "Buttons": {
-        "Add Speed": ["Gamepad","A","Tap"],
-        "Slow Down": ["Joystick","LSY","Hold", 0.2, 128],
-        "Stop": ["Joystick","LSY","Hold", 1, 128],
-        "Reverse": ["Joystick","LSY","ToggleOn", 1, -128],
-        "After Reverse": ["Joystick","LSY","ToggleOff", 256],
-        "Jump": ["Gamepad","A","Tap"],
-        "Right Backward": ["Gamepad","A","Tap"],
-
-        "Button1": ["Macro", ["Gamepad","L","Hold", 0.5],["Gamepad","R","Hold", 0.5]],
-        "Button2": ["Gamepad","DOWN","Tap"],
-        "Button3": ["Gamepad","LEFT","Tap", 0.5],
-        "Button4": ["Gamepad","RIGHT","Tap", 0.5],
-
-        "Nunchuck C Button": ["Gamepad","A","Tap", 0.01],
-        "Nunchuck Z Button": ["Gamepad","B","Tap", 0.01],
-        "Nunchuck Left Flick": ["Gamepad","LB","Tap", 0.01],
-        "Nunchuck Right Flick": ["Gamepad","LT","Toggle", 1]
-        
+        "Add Speed": [
+          "MouseButtons",
+          "LEFT_BUTTON",
+          "Tap"
+        ],
+        "Slow Down": [
+          "MouseButtons",
+          "RIGHT_BUTTON",
+          "Tap"
+        ],
+        "Stop": [
+          "MouseButtons",
+          "RIGHT_BUTTON",
+          "Hold",
+          1
+        ],
+        "Reverse": [
+          "MouseButtons",
+          "RIGHT_BUTTON",
+          "Toggle",
+          3
+        ],
+        "After Reverse": [
+          "MouseButtons",
+          "RIGHT_BUTTON",
+          "ToggleOff",
+          3
+        ],
+        "Jump": [
+          "MouseButtons",
+          "LEFT_BUTTON",
+          "Hold",
+          1
+        ],
+        "Right Backward": [
+          "MouseButtons",
+          "RIGHT_BUTTON",
+          "Toggle",
+          3
+        ],
+        "Button1": [
+          "MouseButtons",
+          "RIGHT_BUTTON",
+          "Tap"
+        ],
+        "Button2": [
+          "MouseButtons",
+          "LEFT_BUTTON",
+          "Tap"
+        ],
+        "Button3": [
+          "Keyboard",
+          "ENTER",
+          "Tap"
+        ],
+        "Button4": [
+          "Keyboard",
+          "ESCAPE",
+          "Tap"
+        ],
+        "Nunchuck C Button": [
+          "MouseButtons",
+          "RIGHT_BUTTON",
+          "Hold",
+          0.01
+        ],
+        "Nunchuck Z Button": [
+          "MouseButtons",
+          "LEFT_BUTTON",
+          "Hold",
+          0.01
+        ],
+        "Nunchuck Left Flick": [
+          "MouseButtons",
+          "LEFT_BUTTON",
+          "Hold",
+          0.01
+        ],
+        "Nunchuck Right Flick": [
+          "MouseButtons",
+          "RIGHT_BUTTON",
+          "Hold",
+          0.01
+        ]
       }
-
     }
-  ]}
+  ]
+}

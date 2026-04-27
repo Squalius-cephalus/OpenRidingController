@@ -35,7 +35,6 @@ class UARTLogic:
                 for b in packet:
                     out.append(f"{b:08b}")
 
-                print("Last send", current_time, ' '.join(out))
                 self.uart.write(packet)
                 self.last_send = current_time
                 self.last_packet = packet

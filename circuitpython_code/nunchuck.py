@@ -14,11 +14,8 @@ class NunchuckHandler:
             print("Nunchuck not controller detected")
             self.nunchuck_connected = False
 
-        
-        
         self.states = {}
-        self.nunchuck_mode = []
-
+        self.nunchuck_mode = {}
 
         self.nunchuck_c_released = False
         self.nunchuck_z_released = False
@@ -26,21 +23,26 @@ class NunchuckHandler:
         self.last_x_nunchuck = 700
         self.last_nunchuck_flick = 0
 
+        self.analog_x = 0
+        self.analog_y = 0
 
 
-    def update(self, current_time, mouse, gamepad):
+
+    def update(self, current_time):
         self.states = {}
         try:
-            self.states = self.handle_nunchuck(mouse, gamepad) | self.detect_flick(current_time)
+            self.states = self.handle_nunchuck() | self.detect_flick(current_time)
         except OSError:
             self.nunchuck_connected = False
+            self.analog_x = 0
+            self.analog_y = 0
             print("Nunchuck controller disconnected!")
         
 
     
 
 
-    def handle_nunchuck(self, mouse, gamepad):
+    def handle_nunchuck(self):
 
         joystick_x, joystick_y = self.nc.joystick
         button_c = self.nc.buttons.C
@@ -60,38 +62,22 @@ class NunchuckHandler:
 
         centered_x = joystick_x - 128
         centered_y = joystick_y - 128
-        if self.nunchuck_mode[0] == "Mouse":
+        if self.nunchuck_mode.get("Mode") == "Mouse":
             if abs(centered_x) < deadzone:
                 centered_x = 0
             if abs(centered_y) < deadzone:
                 centered_y = 0
 
-        try:
-            sensitivity = self.nunchuck_mode[1]
-        except IndexError:
+
+        sensitivity = self.nunchuck_mode.get("Sensitivity")
+        if sensitivity == None:
             sensitivity = 1
 
         centered_x = int(centered_x * sensitivity)
         centered_y = int(centered_y * sensitivity)
         
-        
-        if self.nunchuck_mode[0] == "Mouse":
-            if abs(centered_x)+abs(centered_y)>0:
-                mouse.move_xy(centered_x, -centered_y)
-        else:
-    
-            try:
-                stick = self.nunchuck_mode[2]
-            except IndexError:
-                stick = "LS"
-
-            x_axis = stick+"X"
-            y_axis = stick+"Y"
-
-            if self.nunchuck_mode[0] == "Joystick":
-
-                gamepad.move(x_axis, centered_x)
-                gamepad.move(y_axis, -centered_y)
+        self.analog_x = centered_x
+        self.analog_y = -centered_y
 
         return nunchuck_button_states
 
@@ -135,5 +121,8 @@ class NunchuckHandler:
     
     def is_connected(self):
         return self.nunchuck_connected
+    
+    def get_analog_states(self):
+        return self.analog_x, self.analog_y
 
 

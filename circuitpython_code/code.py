@@ -1,16 +1,14 @@
 import json
-
 import board
 import digitalio
 import neopixel
-
-from analog_output import AnalogHandler
+import time
 from digital_input import ButtonHandler
-from digital_output import DigitalHandler
 from horse_logic import HorseLogicHandler
 from reins_input import ReinsHandler
 from stirrups_input import StirrupsHandler
 from output import OutputManager
+
 
 led = neopixel.NeoPixel(board.GP16, 1, brightness=0.3, auto_write=True)
 with open("/profiles.json", "r") as f:
@@ -47,9 +45,6 @@ button4 = digitalio.DigitalInOut(board.GP5)
 button4.direction = digitalio.Direction.INPUT
 button4.pull = digitalio.Pull.UP
 
-
-import time
-
 setup_calibration = False
 
 button_handler = ButtonHandler(button1, button2, button3, button4)
@@ -73,8 +68,6 @@ class OnboardLED:
             time.sleep(speed/2)
             self.led[0] = [0,0,0]
             time.sleep(speed/2)
-
-
         self.led[0] = original_color
 
 
@@ -102,9 +95,6 @@ class ProfileManager:
         self.led.change_color(self.current_profile["LED Color"])
         output_manager.set_new_profile(self.current_profile)
         output_manager.release_all()
-
-
-
         time.sleep(0.3)
 
 
@@ -119,20 +109,18 @@ def set_settings():
     pass
 
 def calibrate():
-    original_color = onboard_led.get_color()
     stirrups_handler.update()
     stirrups_handler.calibrate()
     reins_handler.update()
     reins_handler.calibrate()
     output_manager.release_all()
-    onboard_led.blocking_blink([0,255,0], 0.4, 5)
+    onboard_led.blocking_blink([0,255,0], 0.2, 5)
 
 
 def steam_input_dance():
     hold_time = 0.2
 
-    # Not pretty but this works, currently missing triggers because SteamInput needs analog trigger input.
-    # Currently, this setup only has four analog axis(two per stick) so two more is needed.
+    # Not pretty but this work
 
     input_list = [["Gamepad", "A", "Hold",hold_time],
                   ["Gamepad", "B", "Hold",hold_time],
@@ -223,9 +211,6 @@ def pause_inputs():
 
     while True:
         current_time = time.monotonic()
-
-
-
         if current_time - last_toggle >= 0.5:
             last_toggle = current_time
             onboard_led.change_color(original_color)
@@ -234,8 +219,6 @@ def pause_inputs():
                 blink = True
             else:
                 blink = False
-
-        # TODO: User needs to hold down the button to start SteamInput automapping
         button_held = 0
         while not profile_button.value:
             button_held += 1
@@ -245,8 +228,6 @@ def pause_inputs():
                 onboard_led.blocking_blink([255, 0, 255])
                 time.sleep(0.5)
                 steam_input_dance()
-
-
         if not pause_button.value:
             time.sleep(0.5)
             print("Pause OFF")
@@ -260,10 +241,8 @@ while True:
     current_time = time.monotonic()
 
     if not setup_calibration:
-
         calibrate()
         setup_calibration = True
-
 
     if not profile_button.value:
         time.sleep(0.1)
@@ -272,18 +251,13 @@ while True:
         while not profile_button.value:
             button_held += 1
             time.sleep(0.01)
-
             if button_held >= 100:
                 calibrate()
-
         if button_held < 100:
             profile_manager.change_profile()
-
     if not pause_button.value:
         pause_inputs()
 
-
-    
     # Update states from inputs
     reins_handler.update()
     stirrups_handler.update()
@@ -299,9 +273,4 @@ while True:
     horse_logic_handler.update(combined_states)
 
     # These will be separated to Gamepad, Mouse and Keyboard handlers. But one main "handler" calls them.
-
-
     output_manager.update(horse_logic_handler.get_states() | button_handler.get_states(), horse_logic_handler.get_analog_states(), current_time)
-
-
-
