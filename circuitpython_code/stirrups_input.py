@@ -18,22 +18,18 @@ class StirrupsHandler:
 
 
         self.stirrups_curve_right = [
-    (55, 255),
-    (161, 127),
-    (346, 0),  #50%, neutral
-    (400, -127),
-    (432, -255)
+    (0, 0),
+    (255, 255),
+    (511, 511)
 ]
         
 
 
 
         self.stirrups_curve_left = [
-    (55, 255),
-    (161, 127),
-    (346, 0),  #50%, neutral
-    (400, -127),
-    (432, -255)
+    (0, 0),
+    (255, 255),
+    (511, 511)
 ]
                 
         self.dead_zone = 10
@@ -43,43 +39,33 @@ class StirrupsHandler:
 
 
 
-        self.right_logic = {
-            "neutral_threshold": 9,
-            "forward_threshold": 220,
-            "backward_threshold": -130,
-            "timer_on": False,
-            "timer":0,
-            "forward_flag": False,
-            "backward_flag": False,
-            "forward_fast": False,
-            "forward_slow": False,
-            "backward_fast": False,
-            "backward_slow": False,
-        }
 
-        self.left_logic = {
-            "neutral_threshold": 9,
-            "forward_threshold": 220,
-            "backward_threshold": -130,
-            "timer_on": False,
-            "timer":0,
-            "forward_flag": False,
-            "backward_flag": False,
-            "forward_fast": False,
-            "forward_slow": False,
-            "backward_fast": False,
-            "backward_slow": False,
-        }
+        self.right_logic = self.reset_states()
+        self.left_logic = self.reset_states()
 
 
 
     def update(self):
         current_time = time.monotonic()
+
+        self.left_logic["forward_fast"] = False
+        self.left_logic["forward_slow"] = False
+        self.left_logic["backward_fast"] = False
+        self.left_logic["backward_slow"] = False
+
+        self.right_logic["forward_fast"] = False
+        self.right_logic["forward_slow"] = False
+        self.right_logic["backward_fast"] = False
+        self.right_logic["backward_slow"] = False
+        
+        
         
 
         self.update_analog()
         self.handle_stirrup_speed(self.left_stirrup,self.left_logic,current_time)
         self.handle_stirrup_speed(self.right_stirrup,self.right_logic,current_time)
+
+
 
     def update_analog(self):
         self.left_stirrup = interpolate(left_stirrup_input.value, self.stirrups_curve_left)
@@ -87,40 +73,29 @@ class StirrupsHandler:
         
 
     def handle_stirrup_speed(self, value, logic, current_time):
-        logic["forward_fast"] = False
-        logic["forward_slow"] = False
-        logic["backward_fast"] = False
-        logic["backward_slow"] = False
+        if (current_time-logic["last_time"] >= 0.01):
+            logic["last_time"] = current_time
+            speed = (value-logic["last_value"])/0.01 /100
+            logic["last_value"] = value
+            if abs(speed) > 30 and value < 100:
+                if (current_time - logic["last_activated"]) > 0.3:
+                    logic["forward_fast"] = True
+                    logic["last_activated"] = current_time
+            elif abs(speed) > 30 and value >350:
+                if (current_time - logic["last_activated"]) > 0.3:
+                    logic["backward_fast"] = True
+                    logic["last_activated"] = current_time
+            elif abs(speed) > 20 and value >350:
+                if (current_time - logic["last_activated"]) > 0.3:
+                    logic["backward_slow"] = True
+                    logic["last_activated"] = current_time
+            elif abs(speed) > 20 and value < 100:
+                if (current_time - logic["last_activated"]) > 0.3:
+                    logic["forward_slow"] = True
+                    logic["last_activated"] = current_time
 
-        if -self.dead_zone <= value <= self.dead_zone:
-            
-            if logic["timer_on"]:
-                time_taken = current_time-logic["timer"]
-                if logic["forward_flag"]:
-                    if time_taken<= self.threshold_fast:
-                        logic["forward_fast"] = True
-                    elif time_taken<= self.threshold_slow:
-                        logic["forward_slow"] = True
-                        print(time_taken)
-                    logic["forward_flag"] = False
-                if logic["backward_flag"]:
-                    if time_taken<= self.threshold_fast:
-                        logic["backward_fast"] = True
-                    elif time_taken<= self.threshold_slow:
-                        logic["backward_slow"] = True
-                    logic["backward_flag"] = False
 
-                logic["timer"] = 0
-                logic["timer_on"] = False      
-        else:# Not in neutral position
-            if not logic["timer_on"]:
-                logic["timer"] = current_time
-                logic["timer_on"] = True
-            if value >= logic["forward_threshold"]:
-                logic["forward_flag"] = True
-            elif value <=  logic["backward_threshold"]:
-                logic["backward_flag"] = True
-
+                
 
 
     def calibrate(self):
@@ -140,6 +115,18 @@ class StirrupsHandler:
 
         print(self.right_logic, self.left_logic)
 
+    def reset_states(self):
+        states = {
+            "last_time":0,
+            "last_value":350,
+            "last_activated":0,
+            "forward_fast": False,
+            "forward_slow": False,
+            "backward_fast": False,
+            "backward_slow": False,
+        }
+        return states
+
 
     def get_states(self):
         states = {
@@ -149,14 +136,10 @@ class StirrupsHandler:
         "stirrup_left_backward_slow":self.left_logic["backward_slow"],
 
         "stirrup_right_forward_fast":self.right_logic["forward_fast"],
-        "stirrup_right_forwardd_slow":self.right_logic["forward_slow"],
+        "stirrup_right_forward_slow":self.right_logic["forward_slow"],
         "stirrup_right_backward_fast":self.right_logic["backward_fast"],
         "stirrup_right_backward_slow":self.right_logic["backward_slow"],
         }
-
-        for i,ii in states.items():
-            if ii:
-                print(i)
 
         return states
 

@@ -50,14 +50,14 @@ class NunchuckHandler:
         
         deadzone = 5
         nunchuck_button_states = {
-            "Nunchuck C Button": False,
-            "Nunchuck Z Button": False,
+            "NunchuckCButton": False,
+            "NunchuckZButton": False,
         }
 
         if button_c:
-            nunchuck_button_states["Nunchuck C Button"] = True
+            nunchuck_button_states["NunchuckCButton"] = True
         if button_z:
-            nunchuck_button_states["Nunchuck Z Button"] = True
+            nunchuck_button_states["NunchuckZButton"] = True
 
 
         centered_x = joystick_x - 128
@@ -87,8 +87,8 @@ class NunchuckHandler:
     def detect_flick(self, current_time):
 
         nunchuck_flick_states = {
-            "Nunchuck Left Flick": False,
-            "Nunchuck Right Flick": False,
+            "NunchuckLeftFlick": False,
+            "NunchuckRightFlick": False,
         }
 
         x, y, z = self.nc.acceleration
@@ -102,10 +102,10 @@ class NunchuckHandler:
         if (current_time - self.last_nunchuck_flick) > 0.2:
             if abs(accel_x) > flick_threshold:
                 if accel_x >0:
-                    nunchuck_flick_states["Nunchuck Right Flick"] = True
+                    nunchuck_flick_states["NunchuckRightFlick"] = True
                     print(accel_x)
                 else:
-                    nunchuck_flick_states["Nunchuck Left Flick"] = True
+                    nunchuck_flick_states["NunchuckLeftFlick"] = True
                 self.last_nunchuck_flick = current_time
 
         self.last_x_nunchuck = x

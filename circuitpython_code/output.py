@@ -13,18 +13,22 @@ nunchuck_handler = NunchuckHandler()
 usb_connected = supervisor.runtime.usb_connected
 
 
-
 class DummyOutput:
     def press(self, *args):
         pass
+
     def release(self, *args):
         pass
+
     def move(self, *args, **kwargs):
         pass
+
     def release_all(self, *args, **kwargs):
         pass
+
     def reins_output(self, *args, **kwargs):
         pass
+
 
 if usb_connected:
     keyboard = KeyboardOutput()
@@ -37,11 +41,10 @@ else:
     gamepad = UARTOutput(uart_logic)
 
 
-
 DEVICES = {
     "Keyboard": keyboard,
     "Gamepad": gamepad,
-    "Joystick": gamepad,
+    "Analog": gamepad,
     "MouseMove": mouse,
     "MouseButton": mouse,
 }
@@ -74,7 +77,14 @@ class OutputManager:
 
         for i, activated in states.items():
             if activated:
-                button = self.buttons[i]
+                try:
+                    button = self.buttons[i]
+                except KeyError as e:
+                    print("Profile is broken! Missing: ", e)
+                    button = {
+                        "Mode": "Keyboard",
+                        "Action": "Tap"
+                    }
 
                 if button.get("Mode") == "Macro":
                     print("Macro detected")
@@ -99,7 +109,7 @@ class OutputManager:
         action = self.get_valid(button, "Action", "Tap", {
                                 "Tap", "Hold", "Toggle", "ToggleOn", "ToggleOff", "Multitap"})
         value = self.get_with_default(button, "Value", 1)
-        analog_value = self.get_with_default(button, "Analog", 127)
+        analog_value = self.get_with_default(button, "AnalogValue", 127)
 
         possible_actions = {
             "Hold": self.add_hold_keys,
@@ -124,11 +134,11 @@ class OutputManager:
     def handle_multitap_keys(self, key, value, mode, _, __, analog_value):
         print("Multitap detected")
         for i in range(int(value)):
-            fake_button =  {"Mode": mode,
-                            "Keycode": key,
-                            "Action": "Tap",
-                            "Value": 0,
-                            "Analog": analog_value}
+            fake_button = {"Mode": mode,
+                           "Keycode": key,
+                           "Action": "Tap",
+                           "Value": 0,
+                           "AnalogValue": analog_value}
             self.reserved_keys.append(fake_button)
 
     def handle_toggle_keys(self, key, _, mode, action, __, analog_value):
@@ -158,7 +168,7 @@ class OutputManager:
         print(mode, key, "pressed")
 
         if analog_value is not None and hasattr(device, "move"):
-            device.move(key, analog_value)
+            device.move(key, analog_value, 1)
         else:
             device.press(key)
 
@@ -168,7 +178,7 @@ class OutputManager:
         print(mode, key, "released")
 
         if hasattr(device, "move"):
-            device.move(key, 0)
+            device.move(key, 0, 1)
         else:
             device.release(key)
 
@@ -178,20 +188,25 @@ class OutputManager:
         gamepad.release_all()
 
     def update_reins_output(self, current_time, analog_value):
-        mode = self.get_with_default(self.rein_mode,"Mode", "Mouse")
+        mode = self.get_with_default(self.rein_mode, "Mode", "Mouse")
         sensitivity = self.get_with_default(self.rein_mode, "Sensitivity", 1)
 
-        if mode == "Joystick":
-            centered_analog_value = int(map_range(analog_value[1] - analog_value[0], -512, 512, -127, 127))
+        if mode == "Analog":
+            centered_analog_value = int(
+                map_range(analog_value[1] - analog_value[0], -512, 512, -127, 127))
             axis = self.rein_mode.get("Axis")
             gamepad.move(axis, centered_analog_value, sensitivity)
 
         elif mode == "Mouse":
-            mouse_hold = self.get_with_default(self.rein_mode, "MouseHold", False)
-            behaviour = self.get_with_default(self.rein_mode, "MouseBehaviour", "Normal")
-            threshold = self.get_with_default(self.rein_mode,"Threshold", 300)
-            mouse_button = self.get_with_default(self.rein_mode,"MouseButton", "LEFT_BUTTON")
-            max_distance = self.get_with_default(self.rein_mode, "MouseMaxDistance", 1024)
+            mouse_hold = self.get_with_default(
+                self.rein_mode, "MouseHold", False)
+            behaviour = self.get_with_default(
+                self.rein_mode, "MouseBehaviour", "Normal")
+            threshold = self.get_with_default(self.rein_mode, "Threshold", 300)
+            mouse_button = self.get_with_default(
+                self.rein_mode, "MouseButton", "LEFT_BUTTON")
+            max_distance = self.get_with_default(
+                self.rein_mode, "MouseMaxDistance", 1024)
             mouse.reins_output(
                 mouse_button,
                 mouse_hold,
@@ -219,10 +234,10 @@ class OutputManager:
         centered_analog_value_x, centered_analog_value_y = nunchuck_handler.get_analog_states()
 
         mode = nunchuck_handler.nunchuck_mode.get("Mode")
-        if mode == "Joystick":
+        if mode == "Analog":
             axis = nunchuck_handler.nunchuck_mode.get("Axis")
-            gamepad.move(axis+"X", centered_analog_value_x ,sensitivity)
-            gamepad.move(axis+"Y", centered_analog_value_y)
+            gamepad.move(axis+"X", centered_analog_value_x, sensitivity)
+            gamepad.move(axis+"Y", centered_analog_value_y, sensitivity)
         elif mode == "Mouse":
             if abs(centered_analog_value_x)+abs(centered_analog_value_y) > 0:
                 mouse.move("X", centered_analog_value_x, sensitivity)

@@ -29,7 +29,7 @@ class ReinsHandler:
 
         
         self.pulled_threshold_low = settings["ReinsThresholdSlowDown"]
-        self.pulled_threshold_mid = settings["ReinsThresholdReinBack"]
+        self.pulled_threshold_rein_back = settings["ReinsThresholdReinBack"]
         self.pulled_threshold_high = settings["ReinsThresholdStop"]
         self.reins_dead_zone = settings["ReinsDeadZone"]
         self.pulled_time_threshold = 0.35
@@ -47,13 +47,14 @@ class ReinsHandler:
 
         self.update_analog()
 
+
         # is reins pulled?
         if self.right_input > self.reins_dead_zone and self.left_input > self.reins_dead_zone:
             if self.internal_states["reins_timer_on"] is False:
                 self.internal_states["reins_pulled_time"] = current_time
                 self.internal_states["reins_timer_on"] = True
 
-        if self.right_input > self.pulled_threshold_mid and self.left_input > self.pulled_threshold_mid:
+        if self.right_input > self.pulled_threshold_rein_back and self.left_input > self.pulled_threshold_rein_back:
             self.states["reins_pulled_currently"] = True
 
 
@@ -84,9 +85,8 @@ class ReinsHandler:
     def get_states(self):
         for i, value in self.states.items():
             if value != self.previous_states[i]:
-                print(i, "Has changed", value)
+                print("Reins input report",i, "Has changed", value)
                 self.previous_states[i] = value
-
         return self.states
 
     def get_analog_states(self):
