@@ -25,12 +25,14 @@ class HorseLogicHandler:
 
     def update(self,input_states):
         # INPUT STATES
-        #    "stirrup_left_forward"
-        #    "stirrup_right_forward"
-        #    "stirrup_left_backward"
-        #    "stirrup_right_backward"
-        #    "both_forward"
-        #    "both_backward"
+        #    "stirrup_left_forward_slow"
+        #    "stirrup_right_forward_slow"
+        #    "stirrup_left_backward_slow"
+        #    "stirrup_right_backward_slow"
+        #    "stirrup_left_forward_fast"
+        #    "stirrup_right_forward_fast"
+        #    "stirrup_left_backward_fast"
+        #    "stirrup_right_backward_fast"
         #    "reins_pulled"
         #   "reins_pulled_currently"
         #   "reins_pulled_back"
@@ -54,10 +56,10 @@ class HorseLogicHandler:
                     self.handle_extra_outputs(input_states)
     def handle_jump(self, input_states, current_time):
 
-        if input_states['stirrup_left_forward']:
+        if input_states['stirrup_right_forward_fast']:
             self.stirrup_left_last_time = current_time
             self.jump_toggle = True
-        if input_states['stirrup_right_forward']:
+        if input_states['stirrup_right_forward_fast']:
             self.stirrup_right_last_time = current_time
             self.jump_toggle = True
 
@@ -71,13 +73,17 @@ class HorseLogicHandler:
 
 
     def handle_extra_outputs(self, input_states):
-        if input_states['stirrup_right_backward']:
-            self.states['Right Backward'] = True
+        if input_states['stirrup_right_backward_slow']:
+            self.states['Right Backward Slow'] = True
+        if input_states['stirrup_right_backward_fast']:
+            self.states['Right Backward Fast'] = True
 
 
 
     def handle_speed(self, input_states):
-        if input_states['stirrup_left_backward']:
+        if input_states['stirrup_left_backward_slow']:
+            self.states['Start Moving'] = True
+        if input_states['stirrup_left_backward_fast']:
             self.states['Add Speed'] = True
         if input_states['reins_pulled']:
             self.states['Slow Down'] = True
@@ -85,7 +91,7 @@ class HorseLogicHandler:
     def handle_reverse(self, input_states):
         if input_states["reins_pulled_currently"] and not self.ready_to_jump:
             self.ready_to_reverse = True
-            if input_states["stirrup_left_forward"]:
+            if input_states["stirrup_left_forward_slow"] or input_states["stirrup_left_forward_fast"]:
                 if not self.in_reverse:
                     self.in_reverse = True
                     self.states["Reverse"] = True
@@ -120,13 +126,15 @@ class HorseLogicHandler:
     @staticmethod
     def reset_states():
         states = {
+            "Start Moving": False,
             "Add Speed": False,
         "Slow Down": False,
         "Stop": False,
         "Reverse": False,
         "After Reverse": False,
         "Jump": False,
-        "Right Backward": False,
+        "Right Backward Slow": False,
+        "Right Backward Fast": False,
         }
         return states
 

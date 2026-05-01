@@ -114,7 +114,7 @@ class NunchuckHandler:
     
 
     def update_profile(self, profile):
-        self.nunchuck_mode = profile["Nunchuck Mode"]
+        self.nunchuck_mode = profile["NunchuckMode"]
 
     def get_states(self):
         return self.states

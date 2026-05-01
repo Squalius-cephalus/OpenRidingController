@@ -1,24 +1,41 @@
 {
   "profiles": [
     {
-      "Name": "SSO",
-      "LED Color": [
-        174,
-        50,
-        236
-      ],
-      "Rein Mode": {
-        "Mode": "Mouse",
-        "Mouse Behaviour": "Returning",
-        "Mouse Button": "LEFT_BUTTON",
-        "Mouse Action": "Hold",
-        "Sensitivity": 1
+      "Name": "mouse and kb",
+
+      "Settings": {
+        "LEDColor": [174, 50, 236],
+        "StirrupsForwardThreshold": 40,
+        "StirrupsBackwardThreshold": 40,
+        "StirrupsDeadZone": 40,
+        "ReinsThresholdSlowDown": 30,
+        "ReinsThresholdReinBack": 100,
+        "ReinsThresholdStop": 390,
+        "ReinsDeadZone": 10
       },
-      "Nunchuck Mode": {
+
+      "ReinMode": {
         "Mode": "Mouse",
-        "Sensitivity": 1
+        "MouseBehaviour": "Returning",
+        "MouseButton": "LEFT_BUTTON",
+        "MouseHold": true,
+        "MouseMaxDistance": 2048,
+        "LeftKey": "A",
+        "RightKey": "B",
+        "Sensitivity": 1,
+        "Threshold": 300,
+        "Axis": "LS"
+      },
+      "NunchuckMode": {
+        "Mode": "Mouse",
+        "Sensitivity": 0.5
       },
       "Buttons": {
+        "Start Moving": {
+          "Mode": "Keyboard",
+          "Keycode": "W",
+          "Action": "Tap"
+        },
         "Add Speed": {
           "Mode": "Keyboard",
           "Keycode": "W",
@@ -49,9 +66,14 @@
           "Keycode": "SPACE",
           "Action": "Tap"
         },
-        "Right Backward": {
+        "Right Backward Fast": {
           "Mode": "Keyboard",
-          "Keycode": "ESCAPE",
+          "Keycode": "E",
+          "Action": "Tap"
+        },
+        "Right Backward Slow": {
+          "Mode": "Keyboard",
+          "Keycode": "SPACE",
           "Action": "Tap"
         },
         "Button1": {
@@ -72,30 +94,36 @@
         },
         "Button4": {
           "Mode": "Macro",
-          "Macro Inputs":
-          [[{
-          "Mode": "Mouse",
-          "Keycode": "Y",
-          "Action": "Tap",
-          "Analog Value": 20
-        }],
-        [{
-          "Mode": "Mouse",
-          "Keycode": "X",
-          "Action": "Tap",
-          "Analog Value": 20
-        }],
-      [{
-          "Mode": "Mouse",
-          "Keycode": "X",
-          "Action": "Tap",
-          "Analog Value": -20
-        }]
-      ]
+          "Macro Inputs": [
+            [
+              {
+                "Mode": "Mouse",
+                "Keycode": "Y",
+                "Action": "Tap",
+                "Analog Value": 20
+              }
+            ],
+            [
+              {
+                "Mode": "Mouse",
+                "Keycode": "X",
+                "Action": "Tap",
+                "Analog Value": 20
+              }
+            ],
+            [
+              {
+                "Mode": "Mouse",
+                "Keycode": "X",
+                "Action": "Tap",
+                "Analog Value": -20
+              }
+            ]
+          ]
         },
         "Nunchuck C Button": {
-          "Mode": "Mouse",
-          "Keycode": "LEFT_BUTTON",
+          "Mode": "MouseMove",
+          "Keycode": "X",
           "Action": "Tap"
         },
         "Nunchuck Z Button": {
@@ -117,18 +145,24 @@
     },
 
     {
-      "Name": "RDR2",
-      "LED Color": [
-        255,
-        0,
-        0
-      ],
-      "Rein Mode": {
+      "Name": "gamepad",
+      "Settings": {
+        "LEDColor": [255, 0, 0],
+        "StirrupsForwardThreshold": 40,
+        "StirrupsBackwardThreshold": 40,
+        "StirrupsDeadZone": 40,
+        "ReinsThresholdSlowDown": 30,
+        "ReinsThresholdReinBack": 100,
+        "ReinsThresholdStop": 390,
+        "ReinsDeadZone": 10
+      },
+
+      "ReinMode": {
         "Mode": "Joystick",
         "Axis": "LSX",
         "Sensitivity": 1
       },
-      "Nunchuck Mode": {
+      "NunchuckMode": {
         "Mode": "Joystick",
         "Sensitivity": 1,
         "Axis": "RS"
@@ -136,20 +170,24 @@
       "Buttons": {
         "Add Speed": {
           "Mode": "Macro",
-          "Macro Inputs":
-          [[{
-          "Mode": "Gamepad",
-          "Keycode": "LSY",
-          "Action": "ToggleOn",
-          "Analog Value": 128
-        }],
-        [{
-          "Mode": "Gamepad",
-          "Keycode": "A",
-          "Action": "MultiTap",
-          "Value": 2
-        }]
-      ]
+          "Macro Inputs": [
+            [
+              {
+                "Mode": "Gamepad",
+                "Keycode": "LSY",
+                "Action": "ToggleOn",
+                "Analog Value": 128
+              }
+            ],
+            [
+              {
+                "Mode": "Gamepad",
+                "Keycode": "A",
+                "Action": "MultiTap",
+                "Value": 2
+              }
+            ]
+          ]
         },
         "Slow Down": {
           "Mode": "Gamepad",
@@ -158,20 +196,24 @@
         },
         "Stop": {
           "Mode": "Macro",
-          "Macro Inputs":
-          [[{
-          "Mode": "Gamepad",
-          "Keycode": "LSY",
-          "Action": "ToggleOff",
-          "Analog Value": 128
-        }],
-        [{
-          "Mode": "Gamepad",
-          "Keycode": "RB",
-          "Action": "Hold",
-          "Value": 1
-        }]
-      ]
+          "Macro Inputs": [
+            [
+              {
+                "Mode": "Gamepad",
+                "Keycode": "LSY",
+                "Action": "ToggleOff",
+                "Analog Value": 128
+              }
+            ],
+            [
+              {
+                "Mode": "Gamepad",
+                "Keycode": "RB",
+                "Action": "Hold",
+                "Value": 1
+              }
+            ]
+          ]
         },
         "Reverse": {
           "Mode": "Gamepad",
@@ -190,9 +232,14 @@
           "Keycode": "A",
           "Action": "Tap"
         },
-        "Right Backward": {
-          "Mode": "Gamepad",
-          "Keycode": "A",
+        "Right Backward Fast": {
+          "Mode": "Keyboard",
+          "Keycode": "E",
+          "Action": "Tap"
+        },
+        "Right Backward Slow": {
+          "Mode": "Keyboard",
+          "Keycode": "SPACE",
           "Action": "Tap"
         },
         "Button1": {
@@ -241,241 +288,6 @@
           "Mode": "Gamepad",
           "Keycode": "LB",
           "Action": "Toggle",
-          "Value": 0.05
-        }
-      }
-    },
-    {
-      "id": 0,
-      "Name": "Switch UART Adapter Test",
-      "LED Color": [
-        0,
-        255,
-        0
-      ],
-      "Rein Mode": {
-        "Mode": "Joystick",
-        "Axis": "LSX",
-        "Sensitivity": 0.1
-      },
-      "Nunchuck Mode": {
-        "Mode": "Joystick",
-        "Axis": "RS",
-        "Sensitivity": 1
-      },
-      "Buttons": {
-        "Add Speed": {
-          "Mode": "Gamepad",
-          "Keycode": "A",
-          "Action": "Tap",
-          "Value": 0.05
-        },
-        "Slow Down": {
-          "Mode": "Gamepad",
-          "Keycode": "LSY",
-          "Action": "Hold",
-          "Value": 0.2,
-          "Analog Value": 127
-        },
-        "Stop": {
-          "Mode": "Gamepad",
-          "Keycode": "LSY",
-          "Action": "Hold",
-          "Value": 1,
-          "Analog Value": 127
-        },
-        "Reverse": {
-          "Mode": "Gamepad",
-          "Keycode": "LSY",
-          "Action": "Toggle",
-          "Value": 0.2,
-          "Analog Value": 127
-        },
-        "After Reverse": {
-          "Mode": "Gamepad",
-          "Keycode": "LSY",
-          "Action": "ToggleOff",
-          "Value": 0.2,
-          "Analog Value": 127
-        },
-        "Jump": {
-          "Mode": "Mouse",
-          "Keycode": "LEFT_BUTTON",
-          "Action": "Hold",
-          "Value": 1
-        },
-        "Right Backward": {
-          "Mode": "Mouse",
-          "Keycode": "RIGHT_BUTTON",
-          "Action": "Toggle",
-          "Value": 1
-        },
-        "Button1": {
-          "Mode": "Macro",
-          "Macro Inputs":
-          [[{
-          "Mode": "Gamepad",
-          "Keycode": "L",
-          "Action": "Hold",
-          "Value": 1
-        }],
-        [{
-          "Mode": "Gamepad",
-          "Keycode": "R",
-          "Action": "Hold",
-          "Value": 1
-        }]
-      ]
-        },
-        "Button2": {
-          "Mode": "Gamepad",
-          "Keycode": "UP",
-          "Action": "Tap",
-          "Value": 1
-        },
-        "Button3": {
-          "Mode": "Gamepad",
-          "Keycode": "DOWN",
-          "Action": "Tap",
-          "Value": 1
-        },
-        "Button4": {
-          "Mode": "Gamepad",
-          "Keycode": "A",
-          "Action": "Tap",
-          "Value": 1
-        },
-        "Nunchuck C Button": {
-          "Mode": "Gamepad",
-          "Keycode": "B",
-          "Action": "Hold",
-          "Value": 0.05
-        },
-        "Nunchuck Z Button": {
-          "Mode": "Gamepad",
-          "Keycode": "A",
-          "Action": "Hold",
-          "Value": 0.05
-        },
-        "Nunchuck Left Flick": {
-          "Mode": "Gamepad",
-          "Keycode": "Y",
-          "Action": "Tap",
-          "Value": 0.05
-        },
-        "Nunchuck Right Flick": {
-          "Mode": "Gamepad",
-          "Keycode": "X",
-          "Action": "Tap",
-          "Value": 0.05
-        }
-      }
-    },
-    {
-      "id": 0,
-      "Name": "Riding Star 3",
-      "LED Color": [
-        0,
-        0,
-        236
-      ],
-      "Rein Mode": {
-        "Mode": "Mouse",
-        "Sensitivity": 0.1
-      },
-      "Nunchuck Mode": {
-        "Mode": "Mouse",
-        "Sensitivity": 1
-      },
-      "Buttons": {
-        "Add Speed": {
-          "Mode": "Mouse",
-          "Keycode": "LEFT_BUTTON",
-          "Action": "Tap",
-          "Value": 0.05
-        },
-        "Slow Down": {
-          "Mode": "Mouse",
-          "Keycode": "RIGHT_BUTTON",
-          "Action": "Tap",
-          "Value": 0.05
-        },
-        "Stop": {
-          "Mode": "Mouse",
-          "Keycode": "RIGHT_BUTTON",
-          "Action": "Hold",
-          "Value": 1
-        },
-        "Reverse": {
-          "Mode": "Mouse",
-          "Keycode": "RIGHT_BUTTON",
-          "Action": "Toggle",
-          "Value": 0.05
-        },
-        "After Reverse": {
-          "Mode": "Mouse",
-          "Keycode": "RIGHT_BUTTON",
-          "Action": "ToggleOff",
-          "Value": 0.05
-        },
-        "Jump": {
-          "Mode": "Mouse",
-          "Keycode": "LEFT_BUTTON",
-          "Action": "Hold",
-          "Value": 1
-        },
-        "Right Backward": {
-          "Mode": "Mouse",
-          "Keycode": "RIGHT_BUTTON",
-          "Action": "Toggle",
-          "Value": 1
-        },
-        "Button1": {
-          "Mode": "Keyboard",
-          "Keycode": "UP_ARROW",
-          "Action": "Tap",
-          "Value": 1
-        },
-        "Button2": {
-          "Mode": "Keyboard",
-          "Keycode": "DOWN_ARROW",
-          "Action": "Tap",
-          "Value": 1
-        },
-        "Button3": {
-          "Mode": "Keyboard",
-          "Keycode": "ENTER",
-          "Action": "Tap",
-          "Value": 1
-        },
-        "Button4": {
-          "Mode": "Keyboard",
-          "Keycode": "ESCAPE",
-          "Action": "Tap",
-          "Value": 1
-        },
-        "Nunchuck C Button": {
-          "Mode": "Mouse",
-          "Keycode": "RIGHT_BUTTON",
-          "Action": "Hold",
-          "Value": 0.05
-        },
-        "Nunchuck Z Button": {
-          "Mode": "Mouse",
-          "Keycode": "LEFT_BUTTON",
-          "Action": "Hold",
-          "Value": 0.05
-        },
-        "Nunchuck Left Flick": {
-          "Mode": "Mouse",
-          "Keycode": "LEFT_BUTTON",
-          "Action": "Tap",
-          "Value": 0.05
-        },
-        "Nunchuck Right Flick": {
-          "Mode": "Mouse",
-          "Keycode": "LEFT_BUTTON",
-          "Action": "Tap",
           "Value": 0.05
         }
       }

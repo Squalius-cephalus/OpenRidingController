@@ -2,6 +2,7 @@ from keyboard_output import KeyboardOutput
 from mouse_output import MouseOutput
 from gamepad_output import GamepadOutput
 from nunchuck import NunchuckHandler
+from adafruit_simplemath import map_range
 
 from uart_logic import UARTLogic
 from uart_output import UARTOutput
@@ -41,21 +42,21 @@ DEVICES = {
     "Keyboard": keyboard,
     "Gamepad": gamepad,
     "Joystick": gamepad,
-    "Mouse": mouse,
+    "MouseMove": mouse,
+    "MouseButton": mouse,
 }
 
 
 class OutputManager:
-    def __init__(self, settings):
+    def __init__(self):
         self.buttons = {}
         self.previous_states = {}
         self.hold_keys = {}
         self.toggle_keys = {}
         self.reserved_keys = []
         self.rein_mode = [""]
-        self.keyboard_reins_threshold = settings["KeyboardReinsThreshold"]
-        self.gamepad_reins_threshold = settings["GamepadReinsThreshold"]
-        self.tap_time = settings["Tap Time"]
+
+        self.tap_time = 0.1
         self.nunchuck_connected = nunchuck_handler.is_connected()
 
     def update(self, states, reins_analog_amount, current_time):
@@ -98,7 +99,7 @@ class OutputManager:
         action = self.get_valid(button, "Action", "Tap", {
                                 "Tap", "Hold", "Toggle", "ToggleOn", "ToggleOff", "Multitap"})
         value = self.get_with_default(button, "Value", 1)
-        analog_value = self.get_with_default(button, "Analog Value", 127)
+        analog_value = self.get_with_default(button, "Analog", 127)
 
         possible_actions = {
             "Hold": self.add_hold_keys,
@@ -127,7 +128,7 @@ class OutputManager:
                             "Keycode": key,
                             "Action": "Tap",
                             "Value": 0,
-                            "Analog Value": analog_value}
+                            "Analog": analog_value}
             self.reserved_keys.append(fake_button)
 
     def handle_toggle_keys(self, key, _, mode, action, __, analog_value):
@@ -177,40 +178,33 @@ class OutputManager:
         gamepad.release_all()
 
     def update_reins_output(self, current_time, analog_value):
-        mode = self.rein_mode.get("Mode")
-        left_key = self.rein_mode.get("Left")
-        right_key = self.rein_mode.get("Right")
-        threshold = self.rein_mode.get("Threshold")
-        mouse_button = self.rein_mode.get("Mouse Button")
-
-        sensitivity = self.rein_mode.get("Sensitivity")
+        mode = self.get_with_default(self.rein_mode,"Mode", "Mouse")
+        sensitivity = self.get_with_default(self.rein_mode, "Sensitivity", 1)
 
         if mode == "Joystick":
-            centered_analog_value = analog_value[1] - analog_value[0]
+            centered_analog_value = int(map_range(analog_value[1] - analog_value[0], -512, 512, -127, 127))
             axis = self.rein_mode.get("Axis")
-            gamepad.move(axis, centered_analog_value)
+            gamepad.move(axis, centered_analog_value, sensitivity)
 
         elif mode == "Mouse":
-            action = self.rein_mode.get("Mouse Action")
-            behaviour = self.rein_mode.get("Mouse Behaviour")
+            mouse_hold = self.get_with_default(self.rein_mode, "MouseHold", False)
+            behaviour = self.get_with_default(self.rein_mode, "MouseBehaviour", "Normal")
+            threshold = self.get_with_default(self.rein_mode,"Threshold", 300)
+            mouse_button = self.get_with_default(self.rein_mode,"MouseButton", "LEFT_BUTTON")
+            max_distance = self.get_with_default(self.rein_mode, "MouseMaxDistance", 1024)
             mouse.reins_output(
                 mouse_button,
-                action,
+                mouse_hold,
                 analog_value,
                 behaviour,
                 current_time,
-                sensitivity
-            )
-
-        elif mode == "Gamepad":
-            gamepad.reins_output(
-                left_key,
-                right_key,
-                threshold,
-                analog_value
+                sensitivity,
+                max_distance
             )
 
         elif mode == "Keyboard":
+            left_key = self.rein_mode.get("LeftKey")
+            right_key = self.rein_mode.get("RightKey")
             keyboard.reins_output(
                 left_key,
                 right_key,
@@ -221,17 +215,18 @@ class OutputManager:
     def update_nunchuck_joystick_output(self):
         if not self.nunchuck_connected:
             return
+        sensitivity = nunchuck_handler.nunchuck_mode.get("Sensitivity")
         centered_analog_value_x, centered_analog_value_y = nunchuck_handler.get_analog_states()
 
         mode = nunchuck_handler.nunchuck_mode.get("Mode")
         if mode == "Joystick":
             axis = nunchuck_handler.nunchuck_mode.get("Axis")
-            gamepad.move(axis+"X", centered_analog_value_x)
+            gamepad.move(axis+"X", centered_analog_value_x ,sensitivity)
             gamepad.move(axis+"Y", centered_analog_value_y)
         elif mode == "Mouse":
             if abs(centered_analog_value_x)+abs(centered_analog_value_y) > 0:
-                mouse.move("X", centered_analog_value_x)
-                mouse.move("Y", centered_analog_value_y)
+                mouse.move("X", centered_analog_value_x, sensitivity)
+                mouse.move("Y", centered_analog_value_y, sensitivity)
 
     def get_valid(self, d, key, default, valid_set):
         value = d.get(key)
@@ -246,9 +241,8 @@ class OutputManager:
     def set_new_profile(self, profile):
         try:
             self.buttons = profile["Buttons"]
-            self.rein_mode = profile["Rein Mode"]
+            self.rein_mode = profile["ReinMode"]
             nunchuck_handler.update_profile(profile)
-
-        except KeyError:
+        except KeyError as e:
             while True:
-                print("Profile has no buttons! Fix your profile.json!")
+                print("Profile is! Fix your profile.json! Missing:",  e)

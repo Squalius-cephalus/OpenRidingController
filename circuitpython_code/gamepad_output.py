@@ -75,7 +75,15 @@ class GamepadOutput:
         self.gamepad.release_all_buttons()
 
 
-    def move(self, axis, analog_value):
+    def move(self, axis, analog_value, sensitivity):
+
+        analog_value = int(analog_value*sensitivity)
+
+        if analog_value > 127: 
+            analog_value = 127 
+        elif analog_value < -127: 
+            analog_value = -127
+
 
         mapping = {
             None: ("x", analog_value),
@@ -93,18 +101,6 @@ class GamepadOutput:
                 self.release(axis)
             else:
                 self.press(axis)
-            return
-            
-
-        if analog_value > 127: 
-            analog_value = 127 
-        elif analog_value < -127: 
-            analog_value = -127
-
-
-
-        if axis not in mapping:
-            print("Unknown Analog axis:", axis)
             return
 
         send_axis, value = mapping[axis]

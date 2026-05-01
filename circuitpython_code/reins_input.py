@@ -1,7 +1,7 @@
 import time
 
 import board
-from adafruit_simplemath import map_range
+from utils import interpolate
 from analogio import AnalogIn
 
 left_rein_input = AnalogIn(board.GP26)
@@ -18,13 +18,21 @@ class ReinsHandler:
         self.previous_states = self.reset_states()
         self.states = self.reset_states()
 
+        self.reins_curve = [
+    (60, 0),
+    (256, 127),
+    (340, 256),  #50%, neutral
+    (390, 383),
+    (432, 511)
+]
+
 
         
-        self.pulled_threshold_low = settings["Threshold Low"]
-        self.pulled_threshold_mid = settings["Threshold Mid"]
-        self.pulled_threshold_high = settings["Threshold High"]
-        self.reins_dead_zone = settings["Dead Zone"]
-        self.pulled_time_threshold = settings["Time Threshold"]
+        self.pulled_threshold_low = settings["ReinsThresholdSlowDown"]
+        self.pulled_threshold_mid = settings["ReinsThresholdReinBack"]
+        self.pulled_threshold_high = settings["ReinsThresholdStop"]
+        self.reins_dead_zone = settings["ReinsDeadZone"]
+        self.pulled_time_threshold = 0.35
 
         self.internal_states = {
         "reins_pulled_time": 0.0,
@@ -37,16 +45,7 @@ class ReinsHandler:
         current_time = time.monotonic()
         self.states = self.reset_states()
 
-
-
-        # Apply calibration offset
-        self.left_input = left_rein_input.value-self.left_offset
-        self.right_input = right_rein_input.value-self.right_offset
-        # Map the inputs, 512 is good
-        self.left_input = int(map_range(self.left_input, 0, 65520, 0, 512))
-        self.right_input = int(map_range(self.right_input, 0, 65520, 0, 512))
-
-        #if self.debug: print(f"Left input: {self.left_input:6d}, Right input: {self.right_input:6d}")
+        self.update_analog()
 
         # is reins pulled?
         if self.right_input > self.reins_dead_zone and self.left_input > self.reins_dead_zone:
@@ -78,7 +77,10 @@ class ReinsHandler:
             self.left_input = 0
             self.right_input = 0
 
-
+    def update_analog(self):
+        self.left_input = interpolate(left_rein_input.value, self.reins_curve)
+        self.right_input = interpolate(right_rein_input.value, self.reins_curve)
+        
     def get_states(self):
         for i, value in self.states.items():
             if value != self.previous_states[i]:
@@ -91,6 +93,7 @@ class ReinsHandler:
         return self.left_input, self.right_input
 
     def calibrate(self):
+        # TODO: REDO THIS
         self.left_offset = left_rein_input.value
         self.right_offset = right_rein_input.value
         print("Reins offsets ", self.left_offset, self.right_offset)

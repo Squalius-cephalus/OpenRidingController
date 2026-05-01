@@ -1,183 +1,176 @@
 import time
 
 import board
-from adafruit_simplemath import map_range
+from utils import interpolate, get_current_position
 from analogio import AnalogIn
 
 left_stirrup_input = AnalogIn(board.GP28)
 right_stirrup_input = AnalogIn(board.GP29)
 
 class StirrupsHandler:
-    def __init__(self, settings):
-        self.debug = True
-        self.left_input = 0
-        self.right_input = 0
-        # IR sensor aren't too accurate to we need to get their "zero" position
-        self.left_neutral = 280
-        self.right_neutral = 280
+    def __init__(self, settings=0):
+        
+        self.neutral_right = 255
+        self.neutral_left = 255
+        self.left_stirrup = 255
+        self.right_stirrup = 255
 
 
-        self.min = 0
-        self.max = 512
 
-        # If sensor is on front, set inverted
-        self.inverted = settings["Inverted"]
-        self.dead_zone = settings["Dead Zone"]
-        self.forward_threshold = settings["Forward Threshold"]
-        self.backward_threshold = settings["Backward Threshold"]
-        self.timer_threshold = settings["Threshold Timer"]
+        self.stirrups_curve_right = [
+    (55, 255),
+    (161, 127),
+    (346, 0),  #50%, neutral
+    (400, -127),
+    (432, -255)
+]
+        
 
 
-        self.previous_states = states = {
-            "stirrup_left_forward":False,
-            "stirrup_right_forward":False,
-            "stirrup_left_backward":False,
-            "stirrup_right_backward": False,
-            "stirrup_left_forward_hold": False,
-            "stirrup_right_forward_hold": False,
-            "stirrup_left_backward_hold": False,
-            "stirrup_right_backward_hold": False,
-            "both_forward":False,
-            "both_backward": False,
-            "stirrup_left_neutral":False,
-            "stirrup_right_neutral": False,
-        }
-        self.states = states = {
-            "stirrup_left_forward":False,
-            "stirrup_right_forward":False,
-            "stirrup_left_backward":False,
-            "stirrup_right_backward": False,
-            "stirrup_left_forward_hold": False,
-            "stirrup_right_forward_hold": False,
-            "stirrup_left_backward_hold": False,
-            "stirrup_right_backward_hold": False,
-            "both_forward":False,
-            "both_backward": False,
-            "stirrup_left_neutral":False,
-            "stirrup_right_neutral": False,
-        }
 
-        self.left_internal_states = {
-            "moving": False,
-            "forward": False,
-            "backward": False,
-            "neutral": False,
+        self.stirrups_curve_left = [
+    (55, 255),
+    (161, 127),
+    (346, 0),  #50%, neutral
+    (400, -127),
+    (432, -255)
+]
+                
+        self.dead_zone = 10
+        self.neutral_right = -11
+        self.threshold_fast = 0.4
+        self.threshold_slow = 0.8
+
+
+
+        self.right_logic = {
+            "neutral_threshold": 9,
+            "forward_threshold": 220,
+            "backward_threshold": -130,
             "timer_on": False,
-            "time": 0.0,
+            "timer":0,
+            "forward_flag": False,
+            "backward_flag": False,
+            "forward_fast": False,
+            "forward_slow": False,
+            "backward_fast": False,
+            "backward_slow": False,
         }
 
-        self.right_internal_states = {
-            "moving": False,
-            "forward": False,
-            "backward": False,
-            "neutral": False,
+        self.left_logic = {
+            "neutral_threshold": 9,
+            "forward_threshold": 220,
+            "backward_threshold": -130,
             "timer_on": False,
-            "time": 0.0,
+            "timer":0,
+            "forward_flag": False,
+            "backward_flag": False,
+            "forward_fast": False,
+            "forward_slow": False,
+            "backward_fast": False,
+            "backward_slow": False,
         }
+
+
 
     def update(self):
-        self.states = self.reset_states(self.states)
         current_time = time.monotonic()
-        self.left_input = left_stirrup_input.value
-        self.right_input = right_stirrup_input.value
-        min_val, max_val = self.is_invert()
-        self.left_input = int(map_range(self.left_input, 0, 65520, min_val, max_val))
-        self.right_input = int(map_range(self.right_input, 0, 65520, min_val, max_val))
+        
 
+        self.update_analog()
+        self.handle_stirrup_speed(self.left_stirrup,self.left_logic,current_time)
+        self.handle_stirrup_speed(self.right_stirrup,self.right_logic,current_time)
 
-        self.stirrup_set_states(self.right_input, self.right_internal_states, self.right_neutral, current_time, "right")
-        self.stirrup_set_states(self.left_input, self.left_internal_states, self.left_neutral, current_time, "left")
+    def update_analog(self):
+        self.left_stirrup = interpolate(left_stirrup_input.value, self.stirrups_curve_left)
+        self.right_stirrup = interpolate(right_stirrup_input.value, self.stirrups_curve_right)
+        
 
-        if self.states["stirrup_left_forward_hold"] and self.states["stirrup_right_forward_hold"]:
-            self.states["both_forward"] = True
-        elif self.states["stirrup_left_backward_hold"] and self.states["stirrup_right_backward_hold"]:
-            self.states["both_backward"] = True
+    def handle_stirrup_speed(self, value, logic, current_time):
+        logic["forward_fast"] = False
+        logic["forward_slow"] = False
+        logic["backward_fast"] = False
+        logic["backward_slow"] = False
 
-        #print(self.left_input, self.right_input)
+        if -self.dead_zone <= value <= self.dead_zone:
+            
+            if logic["timer_on"]:
+                time_taken = current_time-logic["timer"]
+                if logic["forward_flag"]:
+                    if time_taken<= self.threshold_fast:
+                        logic["forward_fast"] = True
+                    elif time_taken<= self.threshold_slow:
+                        logic["forward_slow"] = True
+                        print(time_taken)
+                    logic["forward_flag"] = False
+                if logic["backward_flag"]:
+                    if time_taken<= self.threshold_fast:
+                        logic["backward_fast"] = True
+                    elif time_taken<= self.threshold_slow:
+                        logic["backward_slow"] = True
+                    logic["backward_flag"] = False
 
-
-
-
-    def stirrup_set_states(self, stirrup_input, internal_states, neutral, current_time, side):
-        dead_zone_min = neutral-self.dead_zone
-        dead_zone_max = neutral + self.dead_zone
-
-
-
-
-        if dead_zone_min <= stirrup_input <= dead_zone_max:
-            if self.states[f"stirrup_{side}_forward_hold"]:
-                time_taken = current_time - internal_states["time"]
-                if time_taken < self.timer_threshold:
-                    self.states[f"stirrup_{side}_forward"] = True
-                    print(f"stirrup_{side}_forward")
-                internal_states["timer_on"] = False
-            elif self.states[f"stirrup_{side}_backward_hold"]:
-                time_taken = current_time - internal_states["time"]
-                if time_taken < self.timer_threshold:
-                    self.states[f"stirrup_{side}_backward"] = True
-                internal_states["timer_on"] = False
-            self.states[f"stirrup_{side}_neutral"] = True
-            self.states[f"stirrup_{side}_forward_hold"] = False
-            self.states[f"stirrup_{side}_backward_hold"] = False
-            internal_states["timer_on"] = False
-        else:
-            self.states[f"stirrup_{side}_neutral"] = False
-            if internal_states["timer_on"] is False:
-                internal_states["time"] = current_time
-                internal_states["timer_on"] = True
-
-
-        if stirrup_input > self.forward_threshold+neutral:
-            self.states[f"stirrup_{side}_forward_hold"] = True
-        elif stirrup_input < neutral-self.backward_threshold:
-            self.states[f"stirrup_{side}_backward_hold"] = True
-
-        if stirrup_input > self.forward_threshold+neutral:
-            self.states[f"stirrup_{side}_forward_hold"] = True
-        elif stirrup_input < neutral-self.backward_threshold:
-            self.states[f"stirrup_{side}_backward_hold"] = True
+                logic["timer"] = 0
+                logic["timer_on"] = False      
+        else:# Not in neutral position
+            if not logic["timer_on"]:
+                logic["timer"] = current_time
+                logic["timer_on"] = True
+            if value >= logic["forward_threshold"]:
+                logic["forward_flag"] = True
+            elif value <=  logic["backward_threshold"]:
+                logic["backward_flag"] = True
 
 
 
+    def calibrate(self):
 
+        print("calibration")
+        time.sleep(1)
+
+
+        positions = ["neutral", "backward", "forward"]
+        for i in range(0,3):
+            print(positions[i], " position wait 3 sec")
+            time.sleep(3)
+            self.update_analog()
+            position = positions[i]+"_threshold"
+            self.right_logic[position] = self.right_stirrup
+            self.left_logic[position] = self.left_stirrup
+
+        print(self.right_logic, self.left_logic)
 
 
     def get_states(self):
-        for i, value in self.states.items():
-            if value != self.previous_states[i]:
-                #print(i, "Has changed", value)
-                self.previous_states[i] = value
+        states = {
+        "stirrup_left_forward_fast":self.left_logic["forward_fast"],
+        "stirrup_left_forward_slow":self.left_logic["forward_slow"],
+        "stirrup_left_backward_fast":self.left_logic["backward_fast"],
+        "stirrup_left_backward_slow":self.left_logic["backward_slow"],
 
-        return self.states
+        "stirrup_right_forward_fast":self.right_logic["forward_fast"],
+        "stirrup_right_forwardd_slow":self.right_logic["forward_slow"],
+        "stirrup_right_backward_fast":self.right_logic["backward_fast"],
+        "stirrup_right_backward_slow":self.right_logic["backward_slow"],
+        }
 
-    def get_analog_states(self):
-        return self.left_input, self.right_input
-
-    def calibrate(self):
-        min_val, max_val = self.is_invert()
-
-        left_input = int(map_range(left_stirrup_input.value, 0, 65520, min_val, max_val))
-        right_input = int(map_range(right_stirrup_input.value, 0, 65520, min_val, max_val))
-
-        self.left_neutral = left_input
-        self.right_neutral = right_input
-
-        print("Stirrups neutrals", self.left_neutral, self.right_neutral)
-
-
-    def is_invert(self):
-        if self.inverted:
-            return [self.max, self.min]
-        else:
-            return [self.min, self.max]
-
-
-
-    @staticmethod
-    def reset_states(states):
-        for key, value in states.items():
-            if not any(word in key for word in ("neutral", "hold")):
-                states[key] = False
+        for i,ii in states.items():
+            if ii:
+                print(i)
 
         return states
+
+        
+        
+        
+
+
+
+
+
+            
+
+        
+
+        
+
