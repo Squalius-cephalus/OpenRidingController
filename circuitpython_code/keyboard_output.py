@@ -5,6 +5,7 @@ from adafruit_hid.keycode import Keycode
 class KeyboardOutput:
     def __init__(self):
         self.keyboard = Keyboard(usb_hid.devices)
+        self.is_analog = False
 
     @staticmethod
     def _get_keycode(key_name):
@@ -14,8 +15,7 @@ class KeyboardOutput:
             print("Unknown key:", key_name)
             return getattr(Keycode, "A".upper())
 
-
-
+    
     def release_all(self):
         self.keyboard.release_all()
 

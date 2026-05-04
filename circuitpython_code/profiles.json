@@ -15,15 +15,15 @@
       },
 
       "ReinMode": {
-        "Mode": "Mouse",
+        "Mode": "Keyboard",
         "MouseBehaviour": "Returning",
         "MouseButton": "LEFT_BUTTON",
         "MouseHold": false,
         "MouseMaxDistance": 2048,
         "LeftKey": "A",
-        "RightKey": "B",
+        "RightKey": "D",
         "Sensitivity": 1,
-        "Threshold": 300,
+        "Threshold": 100,
         "Axis": "LS"
       },
       "NunchuckMode": {
@@ -32,8 +32,8 @@
       },
       "Buttons": {
         "StartMoving": {
-          "Mode": "Keyboard",
-          "Keycode": "W",
+          "Mode": "MouseButton",
+          "Keycode": "LEFT_BUTTON",
           "Action": "Tap"
         },
         "AddSpeed": {
@@ -128,9 +128,9 @@
           "Action": "Tap"
         },
         "NunchuckZButton": {
-          "Mode": "Keyboard",
-          "Keycode": "Mouse",
-          "Action": "Mouse"
+          "Mode": "MouseButton",
+          "Keycode": "LEFT_BUTTON",
+          "Action": "Tap"
         },
         "NunchuckLeftFlick": {
           "Mode": "Keyboard",

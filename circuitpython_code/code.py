@@ -97,22 +97,18 @@ onboard_led = OnboardLED(led)
 output_manager = OutputManager()
 profile_manager = ProfileManager(loaded_profiles, onboard_led, output_manager)
 reins_handler = ReinsHandler(profile_manager.current_profile["Settings"])
-stirrups_handler = StirrupsHandler(profile_manager.current_profile["Settings"])
+stirrups_handler = StirrupsHandler()
 horse_logic_handler = HorseLogicHandler()
 
 
 button_handler = ButtonHandler(button1, button2, button3, button4)
 
 
-def set_settings():
-    pass
+
 
 def calibrate():
-    stirrups_handler.calibrate()
-    reins_handler.update()
-    reins_handler.calibrate()
-    output_manager.release_all()
-    onboard_led.blocking_blink([0,255,0], 0.2, 5)
+    # TODO: Redo whole calibration routine, maybe calibrate reins sensor zero position or something
+    return
 
 
 

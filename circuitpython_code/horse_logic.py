@@ -2,8 +2,18 @@ import time
 
 class HorseLogicHandler:
     def __init__(self):
-        self.states = self.reset_states()
-        self.previous_states = self.reset_states()
+        self.states = {
+        "StartMoving": False,
+        "AddSpeed": False,
+        "SlowDown": False,
+        "Stop": False,
+        "Reverse": False,
+        "AfterReverse": False,
+        "Jump": False,
+        "RightBackwardSlow": False,
+        "RightBackwardFast": False,
+        }
+        self.previous_states = self.states.copy()
         self.reins_left = 0
         self.reins_right = 0
         self.stirrup_left_last_time = 4
@@ -38,16 +48,12 @@ class HorseLogicHandler:
         #   "reins_pulled_back"
 
         current_time = time.monotonic()
-        self.states = self.reset_states()
+        self.reset_states()
 
         if input_states["stirrup_left_backward_slow"] and not self.in_reverse:
             self.states["StartMoving"] = True
         elif input_states["stirrup_left_backward_fast"] and not self.in_reverse:
             self.states["AddSpeed"] = True
-
-
-
-
 
         if input_states["reins_pulled_currently"]:
             if not self.ready_to_reverse:
@@ -82,15 +88,6 @@ class HorseLogicHandler:
                 self.stopped = True
                 self.states["Stop"] = True
 
-
-
-            
-
-
-
-        
-
-
     def get_states(self):
         for i, value in self.states.items():
             if value != self.previous_states[i]:
@@ -100,7 +97,6 @@ class HorseLogicHandler:
 
 
     def update_analog(self, analog_input):
-
         self.reins_left = analog_input[0]
         self.reins_right = analog_input[1]
         
@@ -111,20 +107,9 @@ class HorseLogicHandler:
         else:
             return self.reins_left, self.reins_right
 
-    @staticmethod
-    def reset_states():
-        states = {
-        "StartMoving": False,
-        "AddSpeed": False,
-        "SlowDown": False,
-        "Stop": False,
-        "Reverse": False,
-        "AfterReverse": False,
-        "Jump": False,
-        "RightBackwardSlow": False,
-        "RightBackwardFast": False,
-        }
-        return states
+    def reset_states(self):
+        for key in self.states:
+            self.states[key] = False
 
 
 

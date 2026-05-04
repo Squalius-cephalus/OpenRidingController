@@ -1,12 +1,12 @@
 import usb_hid
 from hid_gamepad import Gamepad
-from adafruit_simplemath import map_range
 
 
 class GamepadOutput:
     def __init__(self, uart_object=None):
         self.gamepad = Gamepad(usb_hid.devices)
         self.uart_enabled = False
+        self.is_analog = True
 
         if uart_object != None:
             self.uart_object = uart_object

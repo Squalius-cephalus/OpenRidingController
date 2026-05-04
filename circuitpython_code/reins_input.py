@@ -15,9 +15,13 @@ class ReinsHandler:
         self.left_offset = 0
         self.right_offset = 0
 
-        self.previous_states = self.reset_states()
-        self.states = self.reset_states()
-
+        
+        self.states = {
+            "reins_pulled":False,
+            "reins_pulled_currently": False,
+            "reins_pulled_back":False,
+        }
+        self.previous_states = self.states.copy()
         self.reins_curve = [
     (60, 0),
     (256, 127),
@@ -43,8 +47,7 @@ class ReinsHandler:
 
     def update(self):
         current_time = time.monotonic()
-        self.states = self.reset_states()
-
+        self.reset_states()
         self.update_analog()
 
 
@@ -97,11 +100,9 @@ class ReinsHandler:
         self.left_offset = left_rein_input.value
         self.right_offset = right_rein_input.value
         print("Reins offsets ", self.left_offset, self.right_offset)
-    @staticmethod
-    def reset_states():
-        states = {
-            "reins_pulled":False,
-            "reins_pulled_currently": False,
-            "reins_pulled_back":False,
-        }
-        return states
+
+
+    def reset_states(self):
+        for key in self.states:
+            self.states[key] = False
+

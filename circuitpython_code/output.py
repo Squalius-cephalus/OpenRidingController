@@ -48,7 +48,7 @@ DEVICES = {
     "MouseMove": mouse,
     "MouseButton": mouse,
 }
-
+ANALOG_MODES = {"MouseMove", "Analog", "Gamepad"}
 
 class OutputManager:
     def __init__(self):
@@ -86,12 +86,13 @@ class OutputManager:
                         "Action": "Tap"
                     }
 
-                if button.get("Mode") == "Macro":
+                mode = button.get("Mode", "Keyboard")
+                if mode == "Macro":
                     print("Macro detected")
                     for ii in button.get("Macro Inputs"):
 
                         self.parse_input(ii[0], current_time)
-                elif button.get("Mode") == "None":
+                elif mode == "None":
                     print("Button skipped")
                 else:
                     self.parse_input(button, current_time)
@@ -164,23 +165,24 @@ class OutputManager:
 
     def press_key(self, mode, key, analog_value=None):
         device = DEVICES.get(mode)
-
-        print(mode, key, "pressed")
-
-        if analog_value is not None and hasattr(device, "move"):
+        
+        if analog_value is not None and mode in ANALOG_MODES:
             device.move(key, analog_value, 1)
+            print(mode, key, "moved to", analog_value)
         else:
             device.press(key)
+            print(mode, key, "pressed")
+
+        
 
     def release_key(self, mode, key):
         device = DEVICES.get(mode)
-
-        print(mode, key, "released")
-
-        if hasattr(device, "move"):
+        if mode in ANALOG_MODES:
             device.move(key, 0, 1)
+            print(mode, key, "moved to", 0)
         else:
             device.release(key)
+            print(mode, key, "released")
 
     def release_all(self):
         mouse.release_all()
@@ -194,7 +196,7 @@ class OutputManager:
         if mode == "Analog":
             centered_analog_value = int(
                 map_range(analog_value[1] - analog_value[0], -512, 512, -127, 127))
-            axis = self.rein_mode.get("Axis")
+            axis = self.get_with_default(self.rein_mode, "Axis", "LS")
             gamepad.move(axis, centered_analog_value, sensitivity)
 
         elif mode == "Mouse":
@@ -218,8 +220,10 @@ class OutputManager:
             )
 
         elif mode == "Keyboard":
-            left_key = self.rein_mode.get("LeftKey")
-            right_key = self.rein_mode.get("RightKey")
+
+            left_key = self.get_with_default(self.rein_mode, "LeftKey", "D")
+            right_key = self.get_with_default(self.rein_mode, "RightKey", "A")
+            threshold = self.get_with_default(self.rein_mode, "Threshold", "150")
             keyboard.reins_output(
                 left_key,
                 right_key,
@@ -240,8 +244,7 @@ class OutputManager:
             gamepad.move(axis+"Y", centered_analog_value_y, sensitivity)
         elif mode == "Mouse":
             if abs(centered_analog_value_x)+abs(centered_analog_value_y) > 0:
-                mouse.move("X", centered_analog_value_x, sensitivity)
-                mouse.move("Y", centered_analog_value_y, sensitivity)
+                mouse.move("X", centered_analog_value_x, sensitivity, centered_analog_value_y)
 
     def get_valid(self, d, key, default, valid_set):
         value = d.get(key)

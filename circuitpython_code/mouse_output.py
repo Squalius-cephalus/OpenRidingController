@@ -9,6 +9,7 @@ class MouseOutput:
         self.mouse_moved = False
         self.hold_timer = 0
         self.hold_timer_started = False
+        self.is_analog = True
 
 
         self.mouse_map = {
@@ -19,7 +20,7 @@ class MouseOutput:
             "FORWARD_BUTTON": Mouse.FORWARD_BUTTON,
         }
 
-
+    
     def release(self, key):
         keycode = self._get_mouse_code(key)
         self.mouse.release(keycode)
@@ -32,13 +33,13 @@ class MouseOutput:
         keycode = self._get_mouse_code(key)
         self.mouse.press(keycode)
 
-    def move(self, axis, analog_amount, sensitivity):
-        directions = ["X", "Y", "Wheel"]
+    def move(self, axis, analog_amount, sensitivity, analog_amount_y=None):
+        if analog_amount_y is not None:
+            self.mouse.move(x=int(analog_amount*sensitivity),y=int(analog_amount_y*sensitivity))
+            return
+        directions = ["X", "Y", "WHEEL"]
         if axis in self.mouse_map.keys():
-            if analog_amount == 0:
-                self.release(axis)
-            else:
-                self.press(axis)
+            self.press(axis)
             return
         if axis not in directions:
             print("Unknown Mouse Direction:", axis)
@@ -47,7 +48,7 @@ class MouseOutput:
             self.mouse.move(x=int(analog_amount*sensitivity))
         elif axis == "Y":
             self.mouse.move(y=int(analog_amount*sensitivity))
-        elif axis == "Wheel":
+        elif axis == "WHEEL":
             self.mouse.move(wheel=int(analog_amount*sensitivity))
 
 
