@@ -52,7 +52,7 @@ class MouseOutput:
             self.mouse.move(wheel=int(analog_amount*sensitivity))
 
 
-    def reins_output(self, mouse_button, hold, analog_amount, behaviour, current_time, sensitivity, max_distance):
+    def reins_output(self, mouse_button, hold, analog_amount, returning, current_time, sensitivity, max_distance):
             combined = analog_amount[1]+analog_amount[0]
             movement = analog_amount[1]-analog_amount[0]
             if hold and combined>self.dead_zone:
@@ -61,7 +61,7 @@ class MouseOutput:
                 
             
             # Returns cursor to virtual zero position
-            if behaviour == "Returning":
+            if returning:
                 movement = self.update_axis(int(movement*sensitivity), max_distance)
                 if abs(movement)>0:
                     self.move("X", movement, 1)
@@ -72,6 +72,7 @@ class MouseOutput:
                 if abs(movement)>(int(self.dead_zone/2)):
                     self.move("X",movement, sensitivity)
                     self.previous = int(movement*sensitivity)
+                    self.mouse_moved = True
 
             if hold and abs(combined) < self.dead_zone and self.mouse_moved:
                 if not self.hold_timer_started:

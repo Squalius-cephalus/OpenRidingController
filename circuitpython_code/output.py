@@ -42,13 +42,13 @@ else:
 
 
 DEVICES = {
-    "Keyboard": keyboard,
-    "Gamepad": gamepad,
-    "Analog": gamepad,
-    "MouseMove": mouse,
-    "MouseButton": mouse,
+    "keyboard": keyboard,
+    "gamepad": gamepad,
+    "analog": gamepad,
+    "mouse_move": mouse,
+    "mouse_button": mouse,
 }
-ANALOG_MODES = {"MouseMove", "Analog", "Gamepad"}
+ANALOG_MODES = {"mouse_move", "analog", "gamepad"}
 
 class OutputManager:
     def __init__(self):
@@ -82,12 +82,12 @@ class OutputManager:
                 except KeyError as e:
                     print("Profile is broken! Missing: ", e)
                     button = {
-                        "Mode": "Keyboard",
-                        "Action": "Tap"
+                        "mode": "keyboard",
+                        "action":"tap"
                     }
 
-                mode = button.get("Mode", "Keyboard")
-                if mode == "Macro":
+                mode = button.get("mode", "keyboard")
+                if mode == "macro":
                     print("Macro detected")
                     for ii in button.get("Macro Inputs"):
 
@@ -105,20 +105,20 @@ class OutputManager:
 
     def parse_input(self, button, current_time):
 
-        mode = self.get_valid(button, "Mode", "Keyboard", DEVICES.keys())
-        key = self.get_with_default(button, "Keycode", "A")
-        action = self.get_valid(button, "Action", "Tap", {
-                                "Tap", "Hold", "Toggle", "ToggleOn", "ToggleOff", "Multitap"})
-        value = self.get_with_default(button, "Value", 1)
-        analog_value = self.get_with_default(button, "AnalogValue", 127)
+        mode = self.get_valid(button, "mode", "keyboard", DEVICES.keys())
+        key = self.get_with_default(button, "keycode", "A")
+        action = self.get_valid(button, "action", "tap", {
+                                "tap", "hold", "toggle", "toggle_on", "toggle_off", "multitap"})
+        value = self.get_with_default(button, "value", 1)
+        analog_value = self.get_with_default(button, "analog_value", 127)
 
         possible_actions = {
-            "Hold": self.add_hold_keys,
-            "Tap": self.add_hold_keys,
-            "Toggle": self.handle_toggle_keys,
-            "ToggleOn": self.handle_toggle_keys,
-            "ToggleOff": self.handle_toggle_keys,
-            "Multitap": self.handle_multitap_keys
+            "hold": self.add_hold_keys,
+            "tap": self.add_hold_keys,
+            "toggle": self.handle_toggle_keys,
+            "toggle_on": self.handle_toggle_keys,
+            "toggle_off": self.handle_toggle_keys,
+            "multitap": self.handle_multitap_keys
         }
 
         act = possible_actions.get(action)
@@ -126,7 +126,7 @@ class OutputManager:
         act(key, value, mode, action, current_time, analog_value)
 
     def add_hold_keys(self, key, value, mode, action, current_time, analog_value):
-        if action == "Tap":
+        if action == "tap":
             value = self.tap_time
         expiry = current_time + value
         self.hold_keys[key] = [mode, expiry]
@@ -135,20 +135,20 @@ class OutputManager:
     def handle_multitap_keys(self, key, value, mode, _, __, analog_value):
         print("Multitap detected")
         for i in range(int(value)):
-            fake_button = {"Mode": mode,
-                           "Keycode": key,
-                           "Action": "Tap",
-                           "Value": 0,
-                           "AnalogValue": analog_value}
+            fake_button = {"mode": mode,
+                           "keycode": key,
+                           "action": "tap",
+                           "value": 0,
+                           "analog_value": analog_value}
             self.reserved_keys.append(fake_button)
 
     def handle_toggle_keys(self, key, _, mode, action, __, analog_value):
         if self.toggle_keys.get(key) == mode:
-            if action == "Toggle" or action == "ToggleOff":
+            if action == "toggle" or action == "toggle_off":
                 del self.toggle_keys[key]
                 self.release_key(mode, key)
         else:
-            if action != "ToggleOff":
+            if action != "toggle_off":
                 self.toggle_keys[key] = mode
                 self.press_key(mode, key, analog_value)
 
@@ -190,36 +190,36 @@ class OutputManager:
         gamepad.release_all()
 
     def update_reins_output(self, current_time, analog_value):
-        mode = self.get_with_default(self.rein_mode, "Mode", "Mouse")
-        sensitivity = self.get_with_default(self.rein_mode, "Sensitivity", 1)
+        mode = self.get_with_default(self.rein_mode, "mode", "mouse")
+        sensitivity = self.get_with_default(self.rein_mode, "sensitivity", 1)
 
-        if mode == "Analog":
+        if mode == "analog":
             centered_analog_value = int(
                 map_range(analog_value[1] - analog_value[0], -512, 512, -127, 127))
-            axis = self.get_with_default(self.rein_mode, "Axis", "LS")
+            axis = self.get_with_default(self.rein_mode, "axis", "LS")
             gamepad.move(axis, centered_analog_value, sensitivity)
 
-        elif mode == "Mouse":
+        elif mode == "mouse":
             mouse_hold = self.get_with_default(
-                self.rein_mode, "MouseHold", False)
-            behaviour = self.get_with_default(
-                self.rein_mode, "MouseBehaviour", "Normal")
-            threshold = self.get_with_default(self.rein_mode, "Threshold", 300)
+                self.rein_mode, "mouse_hold", False)
+            threshold = self.get_with_default(self.rein_mode, "threshold", 300)
             mouse_button = self.get_with_default(
-                self.rein_mode, "MouseButton", "LEFT_BUTTON")
+                self.rein_mode, "mouse_button", "LEFT_BUTTON")
             max_distance = self.get_with_default(
-                self.rein_mode, "MouseMaxDistance", 1024)
+                self.rein_mode, "mouse_max_distance", 1024)
+            mouse_returning = self.get_with_default(
+                self.rein_mode, "mouse_returning", False)
             mouse.reins_output(
                 mouse_button,
                 mouse_hold,
                 analog_value,
-                behaviour,
+                mouse_returning,
                 current_time,
                 sensitivity,
                 max_distance
             )
 
-        elif mode == "Keyboard":
+        elif mode == "keyboard":
 
             left_key = self.get_with_default(self.rein_mode, "LeftKey", "D")
             right_key = self.get_with_default(self.rein_mode, "RightKey", "A")
@@ -234,15 +234,15 @@ class OutputManager:
     def update_nunchuck_joystick_output(self):
         if not self.nunchuck_connected:
             return
-        sensitivity = nunchuck_handler.nunchuck_mode.get("Sensitivity")
+        sensitivity = nunchuck_handler.nunchuck_mode.get("sensitivity")
         centered_analog_value_x, centered_analog_value_y = nunchuck_handler.get_analog_states()
 
-        mode = nunchuck_handler.nunchuck_mode.get("Mode")
-        if mode == "Analog":
-            axis = nunchuck_handler.nunchuck_mode.get("Axis")
+        mode = nunchuck_handler.nunchuck_mode.get("mode")
+        if mode == "analog":
+            axis = nunchuck_handler.nunchuck_mode.get("axis")
             gamepad.move(axis+"X", centered_analog_value_x, sensitivity)
             gamepad.move(axis+"Y", centered_analog_value_y, sensitivity)
-        elif mode == "Mouse":
+        elif mode == "mouse":
             if abs(centered_analog_value_x)+abs(centered_analog_value_y) > 0:
                 mouse.move("X", centered_analog_value_x, sensitivity, centered_analog_value_y)
 
@@ -258,8 +258,8 @@ class OutputManager:
 
     def set_new_profile(self, profile):
         try:
-            self.buttons = profile["Buttons"]
-            self.rein_mode = profile["ReinMode"]
+            self.buttons = profile["buttons"]
+            self.rein_mode = profile["rein_mode"]
             nunchuck_handler.update_profile(profile)
         except KeyError as e:
             while True:

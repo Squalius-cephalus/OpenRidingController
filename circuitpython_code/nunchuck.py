@@ -50,26 +50,26 @@ class NunchuckHandler:
         
         deadzone = 5
         nunchuck_button_states = {
-            "NunchuckCButton": False,
-            "NunchuckZButton": False,
+            "nunchuck_c_button": False,
+            "nunchuck_z_button": False,
         }
 
         if button_c:
-            nunchuck_button_states["NunchuckCButton"] = True
+            nunchuck_button_states["nunchuck_c_button"] = True
         if button_z:
-            nunchuck_button_states["NunchuckZButton"] = True
+            nunchuck_button_states["nunchuck_z_button"] = True
 
 
         centered_x = joystick_x - 128
         centered_y = joystick_y - 128
-        if self.nunchuck_mode.get("Mode") == "Mouse":
+        if self.nunchuck_mode.get("mode") == "mouse":
             if abs(centered_x) < deadzone:
                 centered_x = 0
             if abs(centered_y) < deadzone:
                 centered_y = 0
 
 
-        sensitivity = self.nunchuck_mode.get("Sensitivity")
+        sensitivity = self.nunchuck_mode.get("sensitivity")
         if sensitivity == None:
             sensitivity = 1
 
@@ -87,8 +87,8 @@ class NunchuckHandler:
     def detect_flick(self, current_time):
 
         nunchuck_flick_states = {
-            "NunchuckLeftFlick": False,
-            "NunchuckRightFlick": False,
+            "nunchuck_flick_left": False,
+            "nunchuck_flick_right": False,
         }
 
         x, y, z = self.nc.acceleration
@@ -102,10 +102,10 @@ class NunchuckHandler:
         if (current_time - self.last_nunchuck_flick) > 0.2:
             if abs(accel_x) > flick_threshold:
                 if accel_x >0:
-                    nunchuck_flick_states["NunchuckRightFlick"] = True
+                    nunchuck_flick_states["nunchuck_flick_right"] = True
                     print(accel_x)
                 else:
-                    nunchuck_flick_states["NunchuckLeftFlick"] = True
+                    nunchuck_flick_states["nunchuck_flick_left"] = True
                 self.last_nunchuck_flick = current_time
 
         self.last_x_nunchuck = x
@@ -114,7 +114,7 @@ class NunchuckHandler:
     
 
     def update_profile(self, profile):
-        self.nunchuck_mode = profile["NunchuckMode"]
+        self.nunchuck_mode = profile["nunchuck_mode"]
 
     def get_states(self):
         return self.states

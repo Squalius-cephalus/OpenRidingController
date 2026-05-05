@@ -3,15 +3,15 @@ import time
 class HorseLogicHandler:
     def __init__(self):
         self.states = {
-        "StartMoving": False,
-        "AddSpeed": False,
-        "SlowDown": False,
-        "Stop": False,
-        "Reverse": False,
-        "AfterReverse": False,
-        "Jump": False,
-        "RightBackwardSlow": False,
-        "RightBackwardFast": False,
+        "start_moving": False,
+        "add_speed": False,
+        "slow_down": False,
+        "stop": False,
+        "reverse": False,
+        "after_reverse": False,
+        "jump": False,
+        "right_backward_slow": False,
+        "right_backward_fast": False,
         }
         self.previous_states = self.states.copy()
         self.reins_left = 0
@@ -51,9 +51,9 @@ class HorseLogicHandler:
         self.reset_states()
 
         if input_states["stirrup_left_backward_slow"] and not self.in_reverse:
-            self.states["StartMoving"] = True
+            self.states["start_moving"] = True
         elif input_states["stirrup_left_backward_fast"] and not self.in_reverse:
-            self.states["AddSpeed"] = True
+            self.states["add_speed"] = True
 
         if input_states["reins_pulled_currently"]:
             if not self.ready_to_reverse:
@@ -61,23 +61,23 @@ class HorseLogicHandler:
         else:
             if self.in_reverse:
                  self.in_reverse = False
-                 self.states["AfterReverse"] = True
+                 self.states["after_reverse"] = True
 
             self.ready_to_reverse = False
-            self.states["Stop"] = False
+            self.states["stop"] = False
             self.stopped = False
 
         if self.ready_to_reverse and (input_states["stirrup_left_forward_slow"] or input_states["stirrup_left_forward_fast"] ):
             if not self.in_reverse:
-                self.states["Reverse"] = True
+                self.states["reverse"] = True
                 self.in_reverse = True
         
         if input_states["reins_pulled"]:
-            self.states["SlowDown"] = True
+            self.states["slow_down"] = True
         if input_states["stirrup_right_backward_fast"]:
-            self.states["RightBackwardFast"] = True
+            self.states["right_backward_fast"] = True
         if input_states["stirrup_right_backward_slow"]:
-            self.states["RightBackwardSlow"] = True
+            self.states["right_backward_slow"] = True
             
         
         if input_states["reins_pulled_back"]:
@@ -86,7 +86,7 @@ class HorseLogicHandler:
                 self.reins_left = 0
                 self.reins_right = 0
                 self.stopped = True
-                self.states["Stop"] = True
+                self.states["stop"] = True
 
     def get_states(self):
         for i, value in self.states.items():

@@ -78,16 +78,16 @@ class ProfileManager:
         self.current_index = 0
         self.current_profile = self.profiles[self.current_index]
         if DEBUG:
-            print("Active profile:", self.current_profile["Name"])
-        self.led.change_color(self.current_profile["Settings"]["LEDColor"])
+            print("Active profile:", self.current_profile["name"])
+        self.led.change_color(self.current_profile["settings"]["led_color"])
         self.output_manager.set_new_profile(self.current_profile)
 
     def change_profile(self):
         self.current_index = (self.current_index + 1) % len(self.profiles)
         self.current_profile = self.profiles[self.current_index]
         if DEBUG:
-            print("Active profile:", self.current_profile["Name"])
-        self.led.change_color(self.current_profile["Settings"]["LEDColor"])
+            print("Active profile:", self.current_profile["name"])
+        self.led.change_color(self.current_profile["settings"]["led_color"])
     
         self.output_manager.set_new_profile(self.current_profile)
         self.output_manager.release_all()
@@ -96,7 +96,7 @@ class ProfileManager:
 onboard_led = OnboardLED(led)
 output_manager = OutputManager()
 profile_manager = ProfileManager(loaded_profiles, onboard_led, output_manager)
-reins_handler = ReinsHandler(profile_manager.current_profile["Settings"])
+reins_handler = ReinsHandler(profile_manager.current_profile["settings"])
 stirrups_handler = StirrupsHandler()
 horse_logic_handler = HorseLogicHandler()
 

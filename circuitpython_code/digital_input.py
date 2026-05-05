@@ -6,10 +6,10 @@ from adafruit_simplemath import map_range
 class ButtonHandler:
     def __init__(self,button1, button2, button3, button4):
         self.states = {
-            "Button1": False,
-            "Button2": False,
-            "Button3": False,
-            "Button4": False,
+            "button1": False,
+            "button2": False,
+            "button3": False,
+            "button4": False,
         }
         self.button1_pressed = False
         self.button2_pressed = False
@@ -23,25 +23,25 @@ class ButtonHandler:
 
     def update(self):
         self.states = {
-            "Button1": False,
-            "Button2": False,
-            "Button3": False,
-            "Button4": False,
+            "button1": False,
+            "button2": False,
+            "button3": False,
+            "button4": False,
         }
         if not self.button1.value and self.button1_pressed == False:
-            self.states["Button1"] = True
+            self.states["button1"] = True
             self.button1_pressed = True
 
         if not self.button2.value and self.button2_pressed == False:
-            self.states["Button2"] = True
+            self.states["button2"] = True
             self.button2_pressed = True
 
         if not self.button3.value and self.button3_pressed == False:
-            self.states["Button3"] = True
+            self.states["button3"] = True
             self.button3_pressed = True
 
         if not self.button4.value and self.button4_pressed == False:
-            self.states["Button4"] = True
+            self.states["button4"] = True
             self.button4_pressed = True
 
 

@@ -64,7 +64,7 @@ class StirrupsHandler:
 
     def update(self):
         current_time = time.monotonic()
-
+        
         self.left_stirrup.clear()
         self.right_stirrup.clear()
 

@@ -32,10 +32,10 @@ class ReinsHandler:
 
 
         
-        self.pulled_threshold_low = settings["ReinsThresholdSlowDown"]
-        self.pulled_threshold_rein_back = settings["ReinsThresholdReinBack"]
-        self.pulled_threshold_high = settings["ReinsThresholdStop"]
-        self.reins_dead_zone = settings["ReinsDeadZone"]
+        self.pulled_threshold_low = settings["reins_threshold_slow_down"]
+        self.pulled_threshold_rein_back = settings["reins_threshold_rein_back"]
+        self.pulled_threshold_high = settings["reins_threshold_stop"]
+        self.reins_dead_zone = settings["reins_dead_zone"]
         self.pulled_time_threshold = 0.35
 
         self.internal_states = {
@@ -49,8 +49,7 @@ class ReinsHandler:
         current_time = time.monotonic()
         self.reset_states()
         self.update_analog()
-
-
+        
         # is reins pulled?
         if self.right_input > self.reins_dead_zone and self.left_input > self.reins_dead_zone:
             if self.internal_states["reins_timer_on"] is False:
