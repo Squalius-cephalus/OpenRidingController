@@ -11,7 +11,8 @@
         "reins_threshold_slow_down": 30,
         "reins_threshold_rein_back": 100,
         "reins_threshold_stop": 390,
-        "reins_dead_zone": 10
+        "stirrup_speed_threshold_fast": 30,
+        "stirrup_speed_threshold_slow": 20
       },
       "rein_mode": {
         "mode": "mouse",
@@ -109,14 +110,45 @@
           "value": 0.1
         },
         "nunchuck_z_button": {
-          "mode": "mouse_button",
-          "keycode": "LEFT_BUTTON",
-          "action": "hold",
-          "value": 0.1
+          "mode": "macro",
+          "keycode": "W",
+          "action": "toggle",
+          "value": 0,
+          "analog_value": 0,
+          "macro": [
+            {
+              "mode": "keyboard",
+              "keycode": "A",
+              "action": "tap",
+              "value": 0,
+              "analog_value": 0
+            },
+            {
+              "mode": "keyboard",
+              "keycode": "B",
+              "action": "tap",
+              "value": 0,
+              "analog_value": 0
+            },
+            {
+              "mode": "keyboard",
+              "keycode": "C",
+              "action": "tap",
+              "value": 0,
+              "analog_value": 0
+            },
+            {
+              "mode": "keyboard",
+              "keycode": "D",
+              "action": "tap",
+              "value": 0,
+              "analog_value": 0
+            }
+          ]
         },
         "nunchuck_flick_left": {
-          "mode": "mouse_button",
-          "keycode": "LEFT_BUTTON",
+          "mode": "gamepad",
+          "keycode": "B",
           "action": "tap"
         },
         "nunchuck_flick_right": {

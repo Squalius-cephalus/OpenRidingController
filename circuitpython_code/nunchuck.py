@@ -1,21 +1,24 @@
 import adafruit_nunchuk
 import board
 import busio
-
+from debug import log
 
 class NunchuckHandler:
     def __init__(self):
         try:
             i2c = busio.I2C(board.GP1, board.GP0)
-            print("Nunchuck controller detected")
+            log("Nunchuck controller detected")
             self.nc = adafruit_nunchuk.Nunchuk(i2c)
             self.nunchuck_connected = True
-        except Exception:
-            print("Nunchuck not controller detected")
+        except Exception as e:
+            log("Nunchuck not controller detected", e)
             self.nunchuck_connected = False
 
         self.states = {}
-        self.nunchuck_mode = {}
+        self.nunchuck_settings = {}
+        self.nunchuck_mode = ""
+        self.nunchuck_sensitivity = 0
+        self.nunchuck_joystick_axis = ""
 
         self.nunchuck_c_released = False
         self.nunchuck_z_released = False
@@ -36,7 +39,7 @@ class NunchuckHandler:
             self.nunchuck_connected = False
             self.analog_x = 0
             self.analog_y = 0
-            print("Nunchuck controller disconnected!")
+            log("Nunchuck controller disconnected!")
         
 
     
@@ -62,19 +65,19 @@ class NunchuckHandler:
 
         centered_x = joystick_x - 128
         centered_y = joystick_y - 128
-        if self.nunchuck_mode.get("mode") == "mouse":
+        if self.nunchuck_mode == "mouse":
             if abs(centered_x) < deadzone:
                 centered_x = 0
             if abs(centered_y) < deadzone:
                 centered_y = 0
 
 
-        sensitivity = self.nunchuck_mode.get("sensitivity")
+        sensitivity = self.nunchuck_sensitivity
         if sensitivity == None:
             sensitivity = 1
-
         centered_x = int(centered_x * sensitivity)
         centered_y = int(centered_y * sensitivity)
+
         
         self.analog_x = centered_x
         self.analog_y = -centered_y
@@ -103,7 +106,7 @@ class NunchuckHandler:
             if abs(accel_x) > flick_threshold:
                 if accel_x >0:
                     nunchuck_flick_states["nunchuck_flick_right"] = True
-                    print(accel_x)
+                    log(accel_x)
                 else:
                     nunchuck_flick_states["nunchuck_flick_left"] = True
                 self.last_nunchuck_flick = current_time
@@ -113,8 +116,11 @@ class NunchuckHandler:
         return nunchuck_flick_states
     
 
-    def update_profile(self, profile):
-        self.nunchuck_mode = profile["nunchuck_mode"]
+    def set_new_profile(self, profile):
+        self.nunchuck_settings = profile["nunchuck_mode"]
+        self.nunchuck_mode = self.nunchuck_settings.get("mode")
+        self.nunchuck_sensitivity = self.nunchuck_settings.get("sensitivity")
+        self.nunchuck_joystick_axis = self.nunchuck_settings.get("axis")
 
     def get_states(self):
         return self.states
@@ -123,6 +129,12 @@ class NunchuckHandler:
         return self.nunchuck_connected
     
     def get_analog_states(self):
-        return self.analog_x, self.analog_y
-
+        if not self.nunchuck_connected:
+            return None
+        return {"x":self.analog_x, 
+                "y":self.analog_y, 
+                "mode": self.nunchuck_mode, 
+                "sensitivity": self.nunchuck_sensitivity, 
+                "axis": self.nunchuck_joystick_axis}
+    
 

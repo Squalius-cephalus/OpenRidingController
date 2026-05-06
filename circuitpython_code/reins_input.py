@@ -1,5 +1,5 @@
 import time
-
+from debug import log
 import board
 from utils import interpolate
 from analogio import AnalogIn
@@ -8,7 +8,7 @@ left_rein_input = AnalogIn(board.GP26)
 right_rein_input = AnalogIn(board.GP27)
 
 class ReinsHandler:
-    def __init__(self, settings):
+    def __init__(self):
         self.debug = True
         self.left_input = 0
         self.right_input = 0
@@ -32,10 +32,10 @@ class ReinsHandler:
 
 
         
-        self.pulled_threshold_low = settings["reins_threshold_slow_down"]
-        self.pulled_threshold_rein_back = settings["reins_threshold_rein_back"]
-        self.pulled_threshold_high = settings["reins_threshold_stop"]
-        self.reins_dead_zone = settings["reins_dead_zone"]
+        self.pulled_threshold_low = 0
+        self.pulled_threshold_rein_back = 0
+        self.pulled_threshold_high = 0
+        self.reins_dead_zone = 10
         self.pulled_time_threshold = 0.35
 
         self.internal_states = {
@@ -45,6 +45,10 @@ class ReinsHandler:
 
         }
 
+    def set_new_profile(self, settings):
+        self.pulled_threshold_low = settings["reins_threshold_slow_down"]
+        self.pulled_threshold_rein_back = settings["reins_threshold_rein_back"]
+        self.pulled_threshold_high = settings["reins_threshold_stop"]
     def update(self):
         current_time = time.monotonic()
         self.reset_states()
@@ -68,7 +72,7 @@ class ReinsHandler:
             if self.internal_states["reins_pulled"] == True:
                 time_taken = current_time-self.internal_states["reins_pulled_time"]
                 if self.pulled_time_threshold > time_taken:
-                    print("Success! Reins pulled! Horse, slow down")
+                    log("Success! Reins pulled! Horse, slow down")
                     self.states["reins_pulled"] = True
                 self.internal_states["reins_pulled"] = False
             self.internal_states["reins_timer_on"] = False
@@ -87,7 +91,7 @@ class ReinsHandler:
     def get_states(self):
         for i, value in self.states.items():
             if value != self.previous_states[i]:
-                print("Reins input report",i, "Has changed", value)
+                log("Reins input report",i, "Has changed", value)
                 self.previous_states[i] = value
         return self.states
 
@@ -98,7 +102,7 @@ class ReinsHandler:
         # TODO: REDO THIS
         self.left_offset = left_rein_input.value
         self.right_offset = right_rein_input.value
-        print("Reins offsets ", self.left_offset, self.right_offset)
+        log("Reins offsets ", self.left_offset, self.right_offset)
 
 
     def reset_states(self):

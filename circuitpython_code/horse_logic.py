@@ -1,5 +1,5 @@
 import time
-
+from debug import log
 class HorseLogicHandler:
     def __init__(self):
         self.states = {
@@ -91,7 +91,7 @@ class HorseLogicHandler:
     def get_states(self):
         for i, value in self.states.items():
             if value != self.previous_states[i]:
-                print("Horse Logic report",i, "Has changed", value)
+                log("Horse Logic report",i, "Has changed", value)
                 self.previous_states[i] = value
         return self.states
 

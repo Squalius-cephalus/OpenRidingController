@@ -61,7 +61,9 @@ class StirrupsHandler:
         self.left_stirrup = StirrupState()
         self.right_stirrup = StirrupState()
 
-
+    def set_new_profile(self, settings):
+        self.speed_threshold_fast = settings["stirrup_speed_threshold_fast"]
+        self.speed_threshold_slow = settings["stirrup_speed_threshold_slow"]
     def update(self):
         current_time = time.monotonic()
         

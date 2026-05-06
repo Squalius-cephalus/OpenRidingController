@@ -1,7 +1,7 @@
 import time
 import busio
 import board
-
+from debug import log
 
 class UARTLogic:
     def __init__(self, pin, baudrate=115200, header=[0xAA, 0x55], update_freq=20):
@@ -15,7 +15,7 @@ class UARTLogic:
         self.last_packet = 0
         self.last_send = 0
         if baudrate == 9600:
-            print("Slow baudrate detected, update frequenzy slow down to 10Hz")
+            log("Slow baudrate detected, update frequenzy slow down to 10Hz")
             self.update_freq = self.set_hz(10)
         else:
             self.update_freq = self.set_hz(update_freq)

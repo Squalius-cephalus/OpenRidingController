@@ -1,6 +1,6 @@
 import usb_hid
 from hid_gamepad import Gamepad
-
+from debug import log
 
 class GamepadOutput:
     def __init__(self, uart_object=None):
@@ -111,14 +111,14 @@ class GamepadOutput:
     def _get_gamepad_code(self, key_name):
         key = self.gamepad_map.get(key_name.upper())
         if key is None:
-            print("Unknown gamepad key", key_name.upper())
+            log("Unknown gamepad key", key_name.upper())
             return 1
         return key
     
     def _get_uart_code(self, key_name):
         key = self.uart_map.get(key_name.upper())
         if key is None:
-            print("Unknown uart key", key_name.upper())
+            log("Unknown uart key", key_name.upper())
             return 1
         return key
     

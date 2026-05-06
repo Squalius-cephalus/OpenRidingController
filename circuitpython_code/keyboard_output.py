@@ -1,7 +1,7 @@
 import usb_hid
 from adafruit_hid.keyboard import Keyboard
 from adafruit_hid.keycode import Keycode
-
+from debug import log
 class KeyboardOutput:
     def __init__(self):
         self.keyboard = Keyboard(usb_hid.devices)
@@ -12,7 +12,7 @@ class KeyboardOutput:
         try:
             return getattr(Keycode, key_name.upper())
         except AttributeError:
-            print("Unknown key:", key_name)
+            log("Unknown key:", key_name)
             return getattr(Keycode, "A".upper())
 
     

@@ -1,5 +1,5 @@
 from adafruit_simplemath import map_range
-
+from debug import log
 class UARTOutput:
     def __init__(self, uart_object=None):
 
@@ -78,7 +78,7 @@ class UARTOutput:
     def _get_gamepad_code(self, key_name):
         key = self.uart_map.get(key_name.upper())
         if key is None:
-            print("Unknown UART key", key_name.upper())
+            log("Unknown UART key", key_name.upper())
             return 1
         return key
     

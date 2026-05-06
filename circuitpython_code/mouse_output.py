@@ -1,5 +1,6 @@
 import usb_hid
 from adafruit_hid.mouse import Mouse
+from debug import log
 class MouseOutput:
     def __init__(self):
         self.mouse = Mouse(usb_hid.devices)
@@ -42,7 +43,7 @@ class MouseOutput:
             self.press(axis)
             return
         if axis not in directions:
-            print("Unknown Mouse Direction:", axis)
+            log("Unknown Mouse Direction:", axis)
             axis = "X"
         if axis == "X":
             self.mouse.move(x=int(analog_amount*sensitivity))
@@ -53,12 +54,9 @@ class MouseOutput:
 
 
     def reins_output(self, mouse_button, hold, analog_amount, returning, current_time, sensitivity, max_distance):
-            combined = analog_amount[1]+analog_amount[0]
             movement = analog_amount[1]-analog_amount[0]
-            if hold and combined>self.dead_zone:
+            if hold and abs(movement)>self.dead_zone:
                 self.press(mouse_button)
-
-                
             
             # Returns cursor to virtual zero position
             if returning:
@@ -74,7 +72,7 @@ class MouseOutput:
                     self.previous = int(movement*sensitivity)
                     self.mouse_moved = True
 
-            if hold and abs(combined) < self.dead_zone and self.mouse_moved:
+            if hold and abs(movement) < self.dead_zone and self.mouse_moved:
                 if not self.hold_timer_started:
                     self.hold_timer = current_time
                     self.hold_timer_started = True
@@ -95,7 +93,7 @@ class MouseOutput:
         if key_name is not None:
             key = self.mouse_map.get(key_name.upper())
             if key is None:
-                print("Unknown mouse key", key_name.upper())
+                log("Unknown mouse key", key_name.upper())
                 return Mouse.LEFT_BUTTON
             return key
         else:
