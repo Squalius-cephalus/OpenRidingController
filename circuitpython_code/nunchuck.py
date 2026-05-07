@@ -80,7 +80,7 @@ class NunchuckHandler:
 
         
         self.analog_x = centered_x
-        self.analog_y = -centered_y
+        self.analog_y = centered_y
 
         return nunchuck_button_states
 

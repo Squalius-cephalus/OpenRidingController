@@ -88,9 +88,9 @@ class GamepadOutput:
         mapping = {
             None: ("x", analog_value),
             "LSX": ("x", analog_value),
-            "LSY": ("y", analog_value),
+            "LSY": ("y", -analog_value),
             "RSX": ("z", analog_value),
-            "RSY": ("r_z", analog_value),
+            "RSY": ("r_z", -analog_value),
             "LT":  ("r_x", analog_value),
             "RT":  ("r_y", analog_value),
         }

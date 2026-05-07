@@ -9,16 +9,16 @@
           236
         ],
         "reins_threshold_slow_down": 100,
-        "reins_threshold_rein_back": 511,
-        "reins_threshold_stop": 511,
-        "stirrup_speed_threshold_fast": 30,
-        "stirrup_speed_threshold_slow": 20
+        "reins_threshold_rein_back": 300,
+        "reins_threshold_stop": 450,
+        "stirrup_speed_threshold_fast": 20,
+        "stirrup_speed_threshold_slow": 10
       },
       "rein_mode": {
-        "mode": "joystick",
-        "sensitivity": 10,
+        "mode": "mouse",
+        "sensitivity": 1,
         "axis": "LS",
-        "mouse_hold": false,
+        "mouse_hold": true,
         "mouse_returning": true,
         "mouse_max_distance": 2048,
         "threshold": 512,
@@ -27,24 +27,24 @@
       },
       "nunchuck_mode": {
         "mode": "mouse",
-        "sensitivity": 10,
+        "sensitivity": 1,
         "axis": "LS"
       },
       "buttons": {
         "start_moving": {
-          "mode": "analog",
+          "mode": "keyboard",
           "keycode": "W",
-          "action": "toggle",
+          "action": "tap",
           "value": 0,
           "analog_value": 1
         },
         "add_speed": {
           "mode": "keyboard",
           "keycode": "W",
-          "action": "toggle"
+          "action": "tap"
         },
         "slow_down": {
-          "mode": "macro",
+          "mode": "keyboard",
           "keycode": "S",
           "action": "tap",
           "value": 0,
@@ -73,7 +73,7 @@
         },
         "after_reverse": {
           "mode": "keyboard",
-          "keycode": "S",
+          "keycode": "W",
           "action": "tap"
         },
         "jump": {
@@ -105,8 +105,8 @@
           "value": 10
         },
         "button3": {
-          "mode": "macro",
-          "keycode": "UP_ARROW",
+          "mode": "keyboard",
+          "keycode": "M",
           "action": "tap",
           "macro": [
             {
@@ -134,7 +134,7 @@
           "mode": "mouse_button",
           "keycode": "RIGHT_BUTTON",
           "action": "hold",
-          "value": ""
+          "value": 0.1
         },
         "nunchuck_z_button": {
           "mode": "mouse_button",
@@ -165,13 +165,13 @@
         "reins_threshold_slow_down": 30,
         "reins_threshold_rein_back": 100,
         "reins_threshold_stop": 390,
-        "stirrup_speed_threshold_fast": 30,
-        "stirrup_speed_threshold_slow": 20
+        "stirrup_speed_threshold_fast": 20,
+        "stirrup_speed_threshold_slow": 10
       },
       "rein_mode": {
-        "mode": "joystick",
+        "mode": "analog",
         "sensitivity": 1,
-        "axis": "LS",
+        "axis": "LSX",
         "mouse_hold": false,
         "mouse_returning": false,
         "mouse_max_distance": 1000,
@@ -180,23 +180,55 @@
         "right_key": "D"
       },
       "nunchuck_mode": {
-        "mode": "joystick",
+        "mode": "analog",
         "sensitivity": 1,
         "axis": "RS"
       },
       "buttons": {
         "start_moving": {
-          "mode": "analog",
+          "mode": "macro",
           "keycode": "LSY",
           "action": "toggle_on",
           "value": 0,
-          "analog_value": -127
+          "analog_value": -127,
+          "macro": [
+            {
+              "mode": "gamepad",
+              "keycode": "A",
+              "action": "tap",
+              "value": 0,
+              "analog_value": 0
+            },
+            {
+              "mode": "analog",
+              "keycode": "LSY",
+              "action": "toggle_on",
+              "value": 0,
+              "analog_value": 127
+            }
+          ]
         },
         "add_speed": {
-          "mode": "gamepad",
-          "keycode": "A",
-          "action": "tap",
-          "value": 2
+          "mode": "macro",
+          "keycode": "RB",
+          "action": "hold",
+          "value": 1,
+          "macro": [
+            {
+              "mode": "gamepad",
+              "keycode": "A",
+              "action": "multitap",
+              "value": 2,
+              "analog_value": 0
+            },
+            {
+              "mode": "analog",
+              "keycode": "LSY",
+              "action": "toggle_on",
+              "value": 0,
+              "analog_value": 127
+            }
+          ]
         },
         "slow_down": {
           "mode": "gamepad",
@@ -263,13 +295,13 @@
           "action": "tap"
         },
         "button2": {
-          "mode": "keyboard",
-          "keycode": "ENTER",
+          "mode": "gamepad",
+          "keycode": "B",
           "action": "tap"
         },
         "button3": {
-          "mode": "keyboard",
-          "keycode": "UP_ARROW",
+          "mode": "gamepad",
+          "keycode": "RSB",
           "action": "tap"
         },
         "button4": {
@@ -280,16 +312,16 @@
         "nunchuck_c_button": {
           "mode": "analog",
           "keycode": "LT",
-          "action": "toggle",
+          "action": "hold",
           "value": 0.1,
-          "analog_value": 127
+          "analog_value": -127
         },
         "nunchuck_z_button": {
           "mode": "analog",
           "keycode": "RT",
           "action": "tap",
           "value": 0.1,
-          "analog_value": 127
+          "analog_value": -127
         },
         "nunchuck_flick_left": {
           "mode": "gamepad",

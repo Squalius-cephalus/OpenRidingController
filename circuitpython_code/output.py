@@ -264,6 +264,7 @@ class OutputManager:
         if mode == "analog":
             gamepad.move(axis+"X", x, sensitivity)
             gamepad.move(axis+"Y", y, sensitivity)
+         
         elif mode == "mouse":
         
             mouse.move("X", x, sensitivity, y)
