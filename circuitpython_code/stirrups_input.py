@@ -61,16 +61,24 @@ class StirrupsHandler:
         self.left_stirrup = StirrupState()
         self.right_stirrup = StirrupState()
 
+        self.boot_up_completed = False
+
     def set_new_profile(self, settings):
         self.speed_threshold_fast = settings["stirrup_speed_threshold_fast"]
         self.speed_threshold_slow = settings["stirrup_speed_threshold_slow"]
     def update(self):
+
+        
         current_time = time.monotonic()
         
         self.left_stirrup.clear()
         self.right_stirrup.clear()
 
         self.update_analog()
+        if not self.boot_up_completed:
+             self.left_stirrup.last_value = self.left_stirrup_value
+             self.right_stirrup.last_value = self.right_stirrup_value
+             self.boot_up_completed = True
         self.handle_stirrup_speed(self.left_stirrup_value, self.left_stirrup, current_time)
         self.handle_stirrup_speed(self.right_stirrup_value, self.right_stirrup, current_time)
 
