@@ -121,14 +121,14 @@ class ProfileManager:
     def __init__(self, profiles, passed_led):
         self.profiles = profiles
         self.led = passed_led
-        self.current_index = 0
+        self.current_index = -1
         self.current_profile = self.profiles[self.current_index]
    
 
     def change_profile(self):
-        if self.current_index != 0:
-            self.current_index = (self.current_index + 1) % len(self.profiles)
-            self.current_profile = self.profiles[self.current_index]
+
+        self.current_index = (self.current_index + 1) % len(self.profiles)
+        self.current_profile = self.profiles[self.current_index]
         log("Active profile:", self.current_profile["name"])
         self.led.change_color(self.current_profile["settings"]["led_color"])
         time.sleep(0.3)
