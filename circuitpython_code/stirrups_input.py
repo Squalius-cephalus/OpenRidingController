@@ -48,11 +48,15 @@ class StirrupState:
 class StirrupsHandler:
     def __init__(self):
 
-        self.stirrups_curve = [(0, 0), (255, 255), (511, 511)]
+        self.stirrups_curve = [(45, 0), 
+                               (270, 127),
+                               (390, 255), 
+                               (471, 383),
+                               (480, 511)]
 
         self.threshold_fast = 0.4
         self.threshold_slow = 0.8
-        self.forward_threshold = 390
+        self.forward_threshold = 380
         self.backward_threshold = 100
         self.speed_threshold_fast = 30
         self.speed_threshold_slow = 20
@@ -85,26 +89,25 @@ class StirrupsHandler:
     def update_analog(self):
         self.left_stirrup_value = interpolate(left_stirrup_input.value, self.stirrups_curve)
         self.right_stirrup_value = interpolate(right_stirrup_input.value, self.stirrups_curve)
-
     def handle_stirrup_speed(self, value, logic, current_time):
-        cooldown = 0.3
+        cooldown = 0.5
         if current_time - logic.last_time >= 0.01:
             logic.last_time = current_time
 
             speed = (value - logic.last_value) / 0.01 / 100
             logic.last_value = value
-
+           
             if current_time - logic.last_activated <= cooldown:
                  return
             
             if abs(speed) > self.speed_threshold_fast and value < self.backward_threshold:
                     logic.activate_forward_fast(current_time)
+                    print("for", value, logic.last_value, speed)
             elif abs(speed) > self.speed_threshold_fast and value > self.forward_threshold:
                     logic.activate_backward_fast(current_time)
-                
-
             elif abs(speed) > self.speed_threshold_slow and value < self.backward_threshold:
                     logic.activate_forward_slow(current_time)
+                    print("for slow", value, logic.last_value, speed)
             elif abs(speed) > self.speed_threshold_slow and value > self.forward_threshold:
                     logic.activate_backward_slow(current_time)
               
