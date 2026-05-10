@@ -1,2 +1,3 @@
 .DS_Store
 circuitpython_code/.vscode/settings.json
+circuitpython_code/lib/
