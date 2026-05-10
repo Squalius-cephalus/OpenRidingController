@@ -3,16 +3,15 @@
     {
       "name": "Keyboard Example",
       "settings": {
-        "led_color": [
-          174,
-          50,
-          236
-        ],
+        "led_color": [174, 50, 236],
         "reins_threshold_slow_down": 100,
-        "reins_threshold_rein_back": 300,
-        "reins_threshold_stop": 450,
-        "stirrup_speed_threshold_fast": 20,
-        "stirrup_speed_threshold_slow": 10
+        "reins_threshold_rein_back": 200,
+        "reins_threshold_stop": 390,
+        "stirrup_speed_threshold_fast": 0.11,
+        "stirrup_speed_threshold_slow": 0.3,
+        "stirrup_forward_threshold": 120,
+        "stirrup_backward_threshold": -100,
+        "stirrup_dead_zone": 20
       },
       "rein_mode": {
         "mode": "mouse",
@@ -21,7 +20,7 @@
         "mouse_hold": true,
         "mouse_returning": true,
         "mouse_max_distance": 2048,
-        "threshold": 512,
+        "keyboard_threshold": 512,
         "left_key": "A",
         "right_key": "D"
       },
@@ -157,16 +156,15 @@
     {
       "name": "Gamepad Example",
       "settings": {
-        "led_color": [
-          255,
-          0,
-          0
-        ],
+        "led_color": [255, 0, 0],
         "reins_threshold_slow_down": 30,
-        "reins_threshold_rein_back": 100,
+        "reins_threshold_rein_back": 50,
         "reins_threshold_stop": 390,
-        "stirrup_speed_threshold_fast": 20,
-        "stirrup_speed_threshold_slow": 10
+        "stirrup_speed_threshold_fast": 0.11,
+        "stirrup_speed_threshold_slow": 0.3,
+        "stirrup_forward_threshold": 120,
+        "stirrup_backward_threshold": -100,
+        "stirrup_dead_zone": 20
       },
       "rein_mode": {
         "mode": "analog",
@@ -175,7 +173,7 @@
         "mouse_hold": false,
         "mouse_returning": false,
         "mouse_max_distance": 1000,
-        "threshold": 100,
+        "keyboard_threshold": 100,
         "left_key": "A",
         "right_key": "D"
       },
@@ -215,17 +213,17 @@
           "value": 1,
           "macro": [
             {
+              "mode": "analog",
+              "keycode": "LSY",
+              "action": "toggle_on",
+              "value": 2,
+              "analog_value": 127
+            },
+            {
               "mode": "gamepad",
               "keycode": "A",
               "action": "multitap",
               "value": 2,
-              "analog_value": 0
-            },
-            {
-              "mode": "analog",
-              "keycode": "LSY",
-              "action": "toggle_on",
-              "value": 0,
               "analog_value": 127
             }
           ]
@@ -260,15 +258,38 @@
           ]
         },
         "reverse": {
-          "mode": "analog",
-          "keycode": "LSY",
+          "mode": "macro",
+          "keycode": "A",
           "action": "toggle_on",
           "value": 0,
-          "analog_value": 127
+          "analog_value": -127,
+          "macro": [
+            {
+              "mode": "gamepad",
+              "keycode": "RB",
+              "action": "tap",
+              "value": 1,
+              "analog_value": 0
+            },
+            {
+              "mode": "wait",
+              "keycode": "",
+              "action": "toggle_off",
+              "value": 0.5,
+              "analog_value": 0
+            },
+            {
+              "mode": "gamepad",
+              "keycode": "RB",
+              "action": "toggle_on",
+              "value": 0,
+              "analog_value": 0
+            }
+          ]
         },
         "after_reverse": {
-          "mode": "analog",
-          "keycode": "LSY",
+          "mode": "gamepad",
+          "keycode": "RB",
           "action": "toggle_off",
           "analog_value": 0
         },
@@ -332,6 +353,134 @@
           "mode": "gamepad",
           "keycode": "LB",
           "action": "toggle"
+        }
+      }
+    },
+    {
+      "name": "RS3",
+      "settings": {
+        "led_color": [175, 243, 238],
+        "reins_threshold_slow_down": 30,
+        "reins_threshold_rein_back": 100,
+        "reins_threshold_stop": 390,
+        "stirrup_speed_threshold_fast": 0.11,
+        "stirrup_speed_threshold_slow": 0.3,
+        "stirrup_forward_threshold": 120,
+        "stirrup_backward_threshold": -100,
+        "stirrup_dead_zone": 20
+      },
+      "rein_mode": {
+        "mode": "keyboard",
+        "sensitivity": 0.1,
+        "axis": "LS",
+        "mouse_hold": false,
+        "mouse_returning": false,
+        "mouse_max_distance": 1000,
+        "keyboard_threshold": 250,
+        "left_key": "LEFT_ARROW",
+        "right_key": "RIGHT_ARROW"
+      },
+      "nunchuck_mode": {
+        "mode": "mouse",
+        "sensitivity": 1,
+        "axis": "LS"
+      },
+      "buttons": {
+        "start_moving": {
+          "mode": "mouse_button",
+          "keycode": "LEFT_BUTTON",
+          "action": "tap",
+          "value": 0,
+          "analog_value": 0
+        },
+        "add_speed": {
+          "mode": "mouse_button",
+          "keycode": "LEFT_BUTTON",
+          "action": "tap"
+        },
+        "slow_down": {
+          "mode": "mouse_button",
+          "keycode": "RIGHT_BUTTON",
+          "action": "tap",
+          "value": 0,
+          "analog_value": 0
+        },
+        "stop": {
+          "mode": "mouse_button",
+          "keycode": "RIGHT_BUTTON",
+          "action": "hold",
+          "value": 0.5
+        },
+        "reverse": {
+          "mode": "mouse_button",
+          "keycode": "RIGHT_BUTTON",
+          "action": "toggle_on",
+          "value": 0,
+          "analog_value": 0
+        },
+        "after_reverse": {
+          "mode": "mouse_button",
+          "keycode": "RIGHT_BUTTON",
+          "action": "toggle_off"
+        },
+        "jump": {
+          "mode": "mouse_button",
+          "keycode": "LEFT_BUTTON",
+          "action": "tap"
+        },
+        "right_backward_slow": {
+          "mode": "mouse_move",
+          "keycode": "Y",
+          "action": "tap",
+          "value": 4
+        },
+        "right_backward_fast": {
+          "mode": "mouse_move",
+          "keycode": "Y",
+          "action": "tap",
+          "value": 4
+        },
+        "button1": {
+          "mode": "keyboard",
+          "keycode": "KEYPAD_ZERO",
+          "action": "tap"
+        },
+        "button2": {
+          "mode": "keyboard",
+          "keycode": "KEYPAD_NUMLOCK",
+          "action": "tap"
+        },
+        "button3": {
+          "mode": "keyboard",
+          "keycode": "ESCAPE",
+          "action": "tap"
+        },
+        "button4": {
+          "mode": "keyboard",
+          "keycode": "KEYPAD_ZERO",
+          "action": "tap"
+        },
+        "nunchuck_c_button": {
+          "mode": "mouse_button",
+          "keycode": "RIGHT_BUTTON",
+          "action": "hold",
+          "value": 0.1
+        },
+        "nunchuck_z_button": {
+          "mode": "mouse_button",
+          "keycode": "LEFT_BUTTON",
+          "action": "hold",
+          "value": 0.1
+        },
+        "nunchuck_flick_left": {
+          "mode": "mouse_button",
+          "keycode": "LEFT_BUTTON",
+          "action": "tap"
+        },
+        "nunchuck_flick_right": {
+          "mode": "mouse_button",
+          "keycode": "RIGHT_BUTTON",
+          "action": "tap"
         }
       }
     }

@@ -73,6 +73,7 @@ class GamepadOutput:
 
     def release_all(self):
         self.gamepad.release_all_buttons()
+        self.gamepad.move_joysticks(x=0, y=0, z=0,r_z=0,r_y=0, r_x=0)
 
 
     def move(self, axis, analog_value, sensitivity):

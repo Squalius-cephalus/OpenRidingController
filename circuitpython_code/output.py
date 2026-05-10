@@ -8,7 +8,10 @@ from uart_output import UARTOutput
 import supervisor
 import board
 from debug import log
-usb_connected = supervisor.runtime.usb_connected
+
+# UART code needs to be fixed or removed. Currently if controller is connected to PC and tries to use Gamepad, it crashes whole code.
+#usb_connected = supervisor.runtime.usb_connected
+usb_connected = True
 
 
 class DummyOutput:
@@ -55,6 +58,8 @@ class OutputManager:
         self.hold_keys = {}
         self.toggle_keys = {}
         self.reserved_keys = []
+        self.macro_keys = []
+        self.macro_timer = 0
         self.rein_mode = {}
 
         self.tap_time = 0.1
@@ -93,8 +98,7 @@ class OutputManager:
                 if mode == "macro":
                     log("Macro detected")
                     for ii in button.get("macro"):
-
-                        self.parse_input(ii, current_time)
+                        self.macro_keys.append(ii)
                 elif mode == None:
                     log("Button skipped")
                 else:
@@ -104,9 +108,20 @@ class OutputManager:
         self.update_reins_output(current_time, reins_analog_amount)
         if nunchuck_analog is not None:
             self.handle_nunchuck_analog(nunchuck_analog)
-        
-        if not usb_connected:
-            uart_logic.update()
+      
+      # TODO: move to own function
+        if self.macro_keys != []:
+            if current_time >= self.macro_timer:
+                if self.macro_keys[0]["mode"] == "wait":
+                    self.macro_timer = self.macro_keys[0]["value"]+current_time
+                else:
+                    self.parse_input(self.macro_keys[0], current_time)
+                self.macro_keys.pop(0)
+
+
+
+        #if not usb_connected:
+        #    uart_logic.update()
 
     def parse_input(self, button, current_time):
 
@@ -187,6 +202,9 @@ class OutputManager:
         mouse.release_all()
         keyboard.release_all()
         gamepad.release_all()
+        self.hold_keys = {}
+        self.toggle_keys = {}
+        self.reserved_keys = []
 
     def update_reins_output(self, current_time, analog_value):
         mode = self.get_with_default(self.rein_mode, "mode", "mouse")
@@ -222,7 +240,7 @@ class OutputManager:
 
             left_key = self.get_with_default(self.rein_mode, "left_key", "D")
             right_key = self.get_with_default(self.rein_mode, "right_key", "A")
-            threshold = self.get_with_default(self.rein_mode, "threshold", "150")
+            threshold = self.get_with_default(self.rein_mode, "keyboard_threshold", "150")
             keyboard.reins_output(
                 left_key,
                 right_key,
@@ -267,4 +285,4 @@ class OutputManager:
          
         elif mode == "mouse":
         
-            mouse.move("X", x, sensitivity, y)
+            mouse.move("X", x, sensitivity, -y)
