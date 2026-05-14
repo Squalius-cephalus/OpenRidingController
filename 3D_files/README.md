@@ -19,6 +19,7 @@ The controller consists of FDM-printed parts, metal tubes, and M3 screws. It is 
 - 2x	Frame Connector - `frame_connector.step` 
 - 4x Accessory Holder - `frame_accessory_holder.step`
 - 2x Strap holder *optional* - `strap_holder.step`
+<img width="1024"  alt="frame" src="https://github.com/user-attachments/assets/e12709c1-186d-4500-b07e-959395817f8a" />
 
 ## Rein Sensor
 You need to make two of these, only sunshade needs to be mirrored in the slicer software. The left and right parts are identical.
@@ -43,6 +44,9 @@ You need to make two of these, only sunshade needs to be mirrored in the slicer 
 
 You need 4x of M3 washers, bolts(10mm) and nuts for connecting one sensor to the accessory holder.
 
+<img width="1024" alt="Rein Sensor" src="https://github.com/user-attachments/assets/92c09c03-b531-4ebe-9f91-01405c8d146f" />
+
+
 ## Stirrup Sensor
 You need to make two of these, the left and right parts are identical.
 
@@ -57,10 +61,12 @@ You need to make two of these, the left and right parts are identical.
 - 1x Stirrup - `stirrup.step`
 - 1x Stirrup plate - `stirrup_antislip_holder.step`
 - 1x Stirrup Reflector - `stirrup_reflector_plate.step`
-- 1x Sunshade  - `sunshade.step`
+- 1x Sunshade (If possible, print from TPU)  - `sunshade.step`
 - 1x Sensor holder - `sensor_holder.step`
 
 You need 4x of M3 washers, bolts(10mm) and nuts for connecting one sensor to the accessory holder.
+
+<img width="1024" alt="Stirrup Densor" src="https://github.com/user-attachments/assets/bbb8c24e-6b6a-4923-8811-660f9f882cf8" />
 
 
 ## Nunchuck Connector
@@ -80,6 +86,9 @@ You need 4x of M3 washers, bolts(10mm) and nuts for connecting one sensor to the
 - 
 You need 4x of M3 washers, bolts(10mm) and nuts for connecting the controller holder to the accessory holder.
 
+<img width="1024" alt="nunchuck" src="https://github.com/user-attachments/assets/9045af5f-17fb-49b4-9153-8ad9bf5e91c7" />
+
+
 ## Electronic Box
 
 Currently there is no PCB design so electronics need to be handwired. 
@@ -89,7 +98,7 @@ Currently there is no PCB design so electronics need to be handwired.
  - 6x M3 Heatset insert OD 5mm
  - 70x50mm Perfboard
  - 2x short M3 bolt+washers
- - 6x MX compatible keyswitches
+ - 6x MX compatible keyswitches/keycaps
  - Solder, wire etc
  
  **Printed parts**
@@ -98,6 +107,9 @@ Currently there is no PCB design so electronics need to be handwired.
 - 1x Case - `electronics_box_main_body.step`
 
 You need 4x of M3 washers, bolts(10mm) and nuts for connecting the controller holder to the accessory holder.
+
+<img width="512" alt="electronics" src="https://github.com/user-attachments/assets/f986a3e4-dc25-4d0e-a7cc-55188a31e8ef" />
+
 
 ## Miscellaneous
 
@@ -111,12 +123,12 @@ You need 4x of M3 washers, bolts(10mm) and nuts for connecting the controller ho
 
 - 2x Strap adapter - `strap_adapter.step`
 
+<img width="1024" alt="strap" src="https://github.com/user-attachments/assets/829b088a-d9d2-4726-8e2e-29491301e912" />
+
+
 ### Bolt Covers
  **Printed parts**
 
 Works with most of the frame parts.
 
 - Bolt Cover - `bolt_cover.step`
-
-
-TODO: Add images
