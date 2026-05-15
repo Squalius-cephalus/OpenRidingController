@@ -6,6 +6,9 @@ The controller mainly uses **RP2040 Zero**, **TCRT5000** IR modules and 3D print
 
 Currently the controller can emulate keyboard, mouse and DirectInput controller, however, this wont work on any "keyboard to game console" adapter, because of how the USB composite system works.
 
+<img width="1429" height="1000" alt="OpenRidingController rev.1" src="https://github.com/user-attachments/assets/75da6f77-70de-4591-b435-3efd1ffd7ecb" />
+
+
 ## Hardware Required
 
  - RP2040 Zero
