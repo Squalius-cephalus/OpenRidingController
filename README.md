@@ -21,7 +21,7 @@ Currently the controller can emulate keyboard, mouse and DirectInput controller,
  - Simple Math
 
 ## Circuit Diagram
-<img width="1500" height="749" alt="circuit_diagram" src="https://github.com/user-attachments/assets/61a64191-9310-48dc-85be-dcbde956e6af" />
+<img width="1500" height="749" alt="circuit_diagram" src="https://github.com/user-attachments/assets/bce18d3e-5612-4eaf-a589-6673e27abf7a" />
 
 
 
