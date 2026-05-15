@@ -3,43 +3,12 @@ from mouse_output import MouseOutput
 from gamepad_output import GamepadOutput
 from adafruit_simplemath import map_range
 import time
-from uart_logic import UARTLogic
-from uart_output import UARTOutput
-import supervisor
-import board
 from debug import log
 
-# UART code needs to be fixed or removed. Currently if controller is connected to PC and tries to use Gamepad, it crashes whole code.
-#usb_connected = supervisor.runtime.usb_connected
-usb_connected = True
 
-
-class DummyOutput:
-    def press(self, *args):
-        pass
-
-    def release(self, *args):
-        pass
-
-    def move(self, *args, **kwargs):
-        pass
-
-    def release_all(self, *args, **kwargs):
-        pass
-
-    def reins_output(self, *args, **kwargs):
-        pass
-
-
-if usb_connected:
-    keyboard = KeyboardOutput()
-    mouse = MouseOutput()
-    gamepad = GamepadOutput()
-else:
-    keyboard = DummyOutput()
-    mouse = DummyOutput()
-    uart_logic = UARTLogic(board.GP8)
-    gamepad = UARTOutput(uart_logic)
+keyboard = KeyboardOutput()
+mouse = MouseOutput()
+gamepad = GamepadOutput()
 
 
 DEVICES = {
@@ -73,7 +42,7 @@ class OutputManager:
             "multitap": self.handle_multitap_keys
         }
 
-    def update(self, states, reins_analog_amount,nunchuck_analog=None, current_time=None):
+    def update(self, states, reins_analog_amount,nunchuk_analog=None, current_time=None):
         if current_time is None:
             current_time = time.monotonic()
         
@@ -106,8 +75,8 @@ class OutputManager:
 
         self.release_hold_keys(current_time)
         self.update_reins_output(current_time, reins_analog_amount)
-        if nunchuck_analog is not None:
-            self.handle_nunchuck_analog(nunchuck_analog)
+        if nunchuk_analog is not None:
+            self.handle_nunchuk_analog(nunchuk_analog)
       
       # TODO: move to own function
         if self.macro_keys != []:
@@ -118,10 +87,6 @@ class OutputManager:
                     self.parse_input(self.macro_keys[0], current_time)
                 self.macro_keys.pop(0)
 
-
-
-        #if not usb_connected:
-        #    uart_logic.update()
 
     def parse_input(self, button, current_time):
 
@@ -219,7 +184,7 @@ class OutputManager:
         elif mode == "mouse":
             mouse_hold = self.get_with_default(
                 self.rein_mode, "mouse_hold", False)
-            threshold = self.get_with_default(self.rein_mode, "threshold", 300)
+            threshold = self.get_with_default(self.rein_mode, "keyboard_threshold", 300)
             mouse_button = self.get_with_default(
                 self.rein_mode, "mouse_button", "LEFT_BUTTON")
             max_distance = self.get_with_default(
@@ -269,7 +234,7 @@ class OutputManager:
             raise ValueError(f"Missing profile key: {e}")
                 
 
-    def handle_nunchuck_analog(self, analog):
+    def handle_nunchuk_analog(self, analog):
         x = analog["x"]
         y = analog["y"]
         mode = analog["mode"]

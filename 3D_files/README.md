@@ -66,27 +66,27 @@ You need to make two of these, the left and right parts are identical.
 
 You need 4x of M3 washers, bolts(10mm) and nuts for connecting one sensor to the accessory holder.
 
-<img width="1024" alt="Stirrup Densor" src="https://github.com/user-attachments/assets/bbb8c24e-6b6a-4923-8811-660f9f882cf8" />
+<img width="1024" alt="Stirrup Sensor" src="https://github.com/user-attachments/assets/bbb8c24e-6b6a-4923-8811-660f9f882cf8" />
 
 
-## Nunchuck Connector
+## Nunchuk Connector
 
 **BOM**
  - 2x M3 Bolt 16mm
  - 2x M3 Heatset insert OD 5mm
  - 3mm zip tie
- - 1x "I2C for Wii, WiiChuck Nunchuck Board"
+ - 1x "I2C for Wii, WiiChuck Nunchuk Board"
  
  **Printed parts**
 
-- 1x Lid - `nunchuck_connector_lid.step`
-- 1x Case - `nunchuck_connector_body.step`
-- 1x Holder - `nunchuck_connector_holder.step`
-- 1x Controller holder - `nunchuck_controller_holder.step`
+- 1x Lid - `nunchuk_connector_lid.step`
+- 1x Case - `nunchuk_connector_body.step`
+- 1x Holder - `nunchuk_connector_holder.step`
+- 1x Controller holder - `nunchuk_controller_holder.step`
 - 
 You need 4x of M3 washers, bolts(10mm) and nuts for connecting the controller holder to the accessory holder.
 
-<img width="1024" alt="nunchuck" src="https://github.com/user-attachments/assets/9045af5f-17fb-49b4-9153-8ad9bf5e91c7" />
+<img width="1024" alt="nunchuk" src="https://github.com/user-attachments/assets/9045af5f-17fb-49b4-9153-8ad9bf5e91c7" />
 
 
 ## Electronic Box

@@ -3,6 +3,7 @@ def interpolate(x, curve):
   
     x = x >> 7         # map to 0-511, this should be faster than using map.
     # clamp
+
     if x <= curve[0][0]:
         return curve[0][1]
 

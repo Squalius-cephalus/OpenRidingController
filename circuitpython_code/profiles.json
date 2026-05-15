@@ -1,11 +1,15 @@
 {
   "profiles": [
     {
-      "name": "Keyboard Example",
+      "name": "Keyboard and Mouse Example",
       "settings": {
-        "led_color": [174, 50, 236],
-        "reins_threshold_slow_down": 100,
-        "reins_threshold_rein_back": 200,
+        "led_color": [
+          174,
+          50,
+          236
+        ],
+        "reins_threshold_slow_down": 30,
+        "reins_threshold_rein_back": 100,
         "reins_threshold_stop": 390,
         "stirrup_speed_threshold_fast": 0.11,
         "stirrup_speed_threshold_slow": 0.3,
@@ -16,15 +20,15 @@
       "rein_mode": {
         "mode": "mouse",
         "sensitivity": 1,
-        "axis": "LS",
+        "axis": "LSX",
         "mouse_hold": true,
         "mouse_returning": true,
         "mouse_max_distance": 2048,
-        "keyboard_threshold": 512,
+        "keyboard_threshold": 200,
         "left_key": "A",
         "right_key": "D"
       },
-      "nunchuck_mode": {
+      "nunchuk_mode": {
         "mode": "mouse",
         "sensitivity": 1,
         "axis": "LS"
@@ -129,24 +133,24 @@
           "keycode": "DOWN_ARROW",
           "action": "tap"
         },
-        "nunchuck_c_button": {
+        "nunchuk_c_button": {
           "mode": "mouse_button",
           "keycode": "RIGHT_BUTTON",
           "action": "hold",
           "value": 0.1
         },
-        "nunchuck_z_button": {
+        "nunchuk_z_button": {
           "mode": "mouse_button",
           "keycode": "LEFT_BUTTON",
           "action": "hold",
           "value": 0.1
         },
-        "nunchuck_flick_left": {
+        "nunchuk_flick_left": {
           "mode": "mouse_button",
           "keycode": "LEFT_BUTTON",
           "action": "tap"
         },
-        "nunchuck_flick_right": {
+        "nunchuk_flick_right": {
           "mode": "mouse_button",
           "keycode": "RIGHT_BUTTON",
           "action": "tap"
@@ -156,7 +160,11 @@
     {
       "name": "Gamepad Example",
       "settings": {
-        "led_color": [255, 0, 0],
+        "led_color": [
+          255,
+          0,
+          0
+        ],
         "reins_threshold_slow_down": 30,
         "reins_threshold_rein_back": 50,
         "reins_threshold_stop": 390,
@@ -177,7 +185,7 @@
         "left_key": "A",
         "right_key": "D"
       },
-      "nunchuck_mode": {
+      "nunchuk_mode": {
         "mode": "analog",
         "sensitivity": 1,
         "axis": "RS"
@@ -330,26 +338,26 @@
           "keycode": "LSB",
           "action": "tap"
         },
-        "nunchuck_c_button": {
+        "nunchuk_c_button": {
           "mode": "analog",
           "keycode": "LT",
           "action": "hold",
           "value": 0.1,
           "analog_value": -127
         },
-        "nunchuck_z_button": {
+        "nunchuk_z_button": {
           "mode": "analog",
           "keycode": "RT",
           "action": "tap",
           "value": 0.1,
           "analog_value": -127
         },
-        "nunchuck_flick_left": {
+        "nunchuk_flick_left": {
           "mode": "gamepad",
           "keycode": "B",
           "action": "tap"
         },
-        "nunchuck_flick_right": {
+        "nunchuk_flick_right": {
           "mode": "gamepad",
           "keycode": "LB",
           "action": "toggle"
@@ -357,9 +365,13 @@
       }
     },
     {
-      "name": "RS3",
+      "name": "Keyboard Only Example",
       "settings": {
-        "led_color": [175, 243, 238],
+        "led_color": [
+          175,
+          243,
+          238
+        ],
         "reins_threshold_slow_down": 30,
         "reins_threshold_rein_back": 100,
         "reins_threshold_stop": 390,
@@ -380,7 +392,7 @@
         "left_key": "LEFT_ARROW",
         "right_key": "RIGHT_ARROW"
       },
-      "nunchuck_mode": {
+      "nunchuk_mode": {
         "mode": "mouse",
         "sensitivity": 1,
         "axis": "LS"
@@ -460,24 +472,24 @@
           "keycode": "KEYPAD_ZERO",
           "action": "tap"
         },
-        "nunchuck_c_button": {
+        "nunchuk_c_button": {
           "mode": "mouse_button",
           "keycode": "RIGHT_BUTTON",
           "action": "hold",
           "value": 0.1
         },
-        "nunchuck_z_button": {
+        "nunchuk_z_button": {
           "mode": "mouse_button",
           "keycode": "LEFT_BUTTON",
           "action": "hold",
           "value": 0.1
         },
-        "nunchuck_flick_left": {
+        "nunchuk_flick_left": {
           "mode": "mouse_button",
           "keycode": "LEFT_BUTTON",
           "action": "tap"
         },
-        "nunchuck_flick_right": {
+        "nunchuk_flick_right": {
           "mode": "mouse_button",
           "keycode": "RIGHT_BUTTON",
           "action": "tap"

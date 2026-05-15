@@ -7,7 +7,7 @@ from digital_input import ButtonHandler
 from horse_logic import HorseLogicHandler
 from reins_input import ReinsHandler
 from stirrups_input import StirrupsHandler
-from nunchuck import NunchuckHandler
+from nunchuk import NunchukHandler
 from output import OutputManager
 from debug import log
 
@@ -51,18 +51,18 @@ class Controller:
         
         self.reins_handler = ReinsHandler()
         self.stirrups_handler = StirrupsHandler()
-        self.nunchuck_handler = NunchuckHandler()
+        self.nunchuk_handler = NunchukHandler()
         self.horse_logic_handler = HorseLogicHandler()
         self.button_handler = ButtonHandler(button1, button2, button3, button4)
-        self.nunchuck_connected = self.nunchuck_handler.is_connected()
+        self.nunchuk_connected = self.nunchuk_handler.is_connected()
 
 
     def update_inputs(self, current_time):
         self.reins_handler.update()
         self.stirrups_handler.update()
         self.button_handler.update()
-        if self.nunchuck_connected:
-            self.nunchuck_handler.update(current_time)
+        if self.nunchuk_connected:
+            self.nunchuk_handler.update(current_time)
 
     def get_states_from_inputs(self):
         stirrup_states = self.stirrups_handler.get_states()
@@ -71,7 +71,7 @@ class Controller:
     
     def set_new_profile(self, new_profile):
         self.output_manager.set_new_profile(new_profile)
-        self.nunchuck_handler.set_new_profile(new_profile)
+        self.nunchuk_handler.set_new_profile(new_profile)
         self.reins_handler.set_new_profile(profile_manager.current_profile["settings"])
         self.stirrups_handler.set_new_profile(profile_manager.current_profile["settings"])
 
@@ -89,8 +89,8 @@ class Controller:
         self.horse_logic_handler.update(self.get_states_from_inputs())
 
         # These will be separated to Gamepad, Mouse and Keyboard handlers. But one main "handler" calls them.
-        states = self.horse_logic_handler.get_states() | self.button_handler.get_states() | self.nunchuck_handler.get_states()
-        self.output_manager.update(states, self.horse_logic_handler.get_analog_states(), self.nunchuck_handler.get_analog_states(), current_time)
+        states = self.horse_logic_handler.get_states() | self.button_handler.get_states() | self.nunchuk_handler.get_states()
+        self.output_manager.update(states, self.horse_logic_handler.get_analog_states(), self.nunchuk_handler.get_analog_states(), current_time)
 
 
 
