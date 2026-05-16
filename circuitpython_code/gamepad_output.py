@@ -1,16 +1,14 @@
+"""
+This module wraps Adafruit HID Gamepad and converts keycodes to HID friendly codes.
+"""
+
 import usb_hid
 from hid_gamepad import Gamepad
 from debug import log
 
 class GamepadOutput:
-    def __init__(self, uart_object=None):
+    def __init__(self):
         self.gamepad = Gamepad(usb_hid.devices)
-        self.uart_enabled = False
-        self.is_analog = True
-
-        if uart_object != None:
-            self.uart_object = uart_object
-            self.uart_enabled = True
 
         self.gamepad_map = {
             "A": 1,
@@ -32,38 +30,6 @@ class GamepadOutput:
 
         }
 
-        self.uart_map = {
-            "Y": 0,
-            "B": 1,
-            "A": 2,
-            "X": 3,
-            "LT": 4,
-            "RT": 5,
-            "LB": 6,
-            "RB": 7,
-            "L": 6,
-            "R": 7,
-            "MINUS": 8,
-            "BACK": 8,
-            "START": 9,
-            "PLUS": 9,
-            "LSB": 10,
-            "RSB": 11,
-            "LS": 10,
-            "RS": 11,
-            "HOME": 12,
-            "CAPTURE": 13,
-            "RESERVED1": 14,
-            "RESERVED2": 15,
-            "UP": 16,
-            "DOWN": 17,
-            "LEFT": 18,
-            "RIGHT": 19
-        }
-
-
-    def update_uart(self):
-        self.uart_thing.update()
 
     def press(self, key):
         self.gamepad.press_buttons(self._get_gamepad_code(key))
@@ -77,12 +43,21 @@ class GamepadOutput:
 
 
     def move(self, axis, analog_value, sensitivity):
+        """
+        Wraps gamepad buttons and analog axis movement to single method
+        that output manager can call.
+        
+        Args:
+            axis: Joystick axis or gamepad button.
+            analog_value: -127 to 127 for joystick movement.
+            sensitivity: Joystick sensitivity
 
+        """
         analog_value = int(analog_value*sensitivity)
 
-        if analog_value > 127: 
-            analog_value = 127 
-        elif analog_value < -127: 
+        if analog_value > 127:
+            analog_value = 127
+        elif analog_value < -127:
             analog_value = -127
 
 
@@ -115,24 +90,3 @@ class GamepadOutput:
             log("Unknown gamepad key", key_name.upper())
             return 1
         return key
-    
-    def _get_uart_code(self, key_name):
-        key = self.uart_map.get(key_name.upper())
-        if key is None:
-            log("Unknown uart key", key_name.upper())
-            return 1
-        return key
-    
-    def reins_output(self, left_key, right_key, threshold, analog_value):
-        left = analog_value[0]
-        right = analog_value[1]
-
-        if left >= threshold and left > right:
-            self.press(left_key)
-        else:
-            self.release(left_key)
-
-        if right >= threshold and right > left:
-            self.press(right_key)
-        else:
-            self.release(right_key)

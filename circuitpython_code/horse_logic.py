@@ -1,6 +1,14 @@
-import time
+"""
+This module process reins and stirrups states and convert
+those something that Output Manager can understand.
+"""
+
 from debug import log
 class HorseLogicHandler:
+    """
+        Handles reins and stirrups states and combines those
+        to new states that Output Manager can understand.
+    """
     def __init__(self):
         self.states = {
         "start_moving": False,
@@ -34,6 +42,9 @@ class HorseLogicHandler:
 
 
     def update(self,input_states):
+        """
+        Updates internal states based on reins and stirrups states.
+        """
         # INPUT STATES
         #    "stirrup_left_forward_slow"
         #    "stirrup_right_forward_slow"
@@ -47,26 +58,26 @@ class HorseLogicHandler:
         #   "reins_pulled_currently"
         #   "reins_pulled_back"
 
-        current_time = time.monotonic()
         self.reset_states()
-        
+
         # Start moving or add speed
         if input_states["stirrup_left_backward_slow"] and not self.in_reverse:
             self.states["start_moving"] = True
         elif input_states["stirrup_left_backward_fast"] and not self.in_reverse:
             self.states["add_speed"] = True
-        
+
         # Reverse a.k.a Rein Back
         if input_states["reins_pulled_currently"]:
             if not self.ready_to_reverse:
                 self.ready_to_reverse = True
         else:
             if self.in_reverse:
-                 self.in_reverse = False
-                 self.states["after_reverse"] = True
+                self.in_reverse = False
+                self.states["after_reverse"] = True
             self.ready_to_reverse = False
 
-        if self.ready_to_reverse and ((input_states["stirrup_left_forward_slow"] or input_states["stirrup_left_forward_fast"] )):
+        if self.ready_to_reverse and ((input_states["stirrup_left_forward_slow"]
+                                       or input_states["stirrup_left_forward_fast"] )):
             if not self.in_reverse:
                 self.states["reverse"] = True
                 self.in_reverse = True
@@ -98,29 +109,38 @@ class HorseLogicHandler:
         else:
             self.stopped = False
 
-        
-
     def get_states(self):
+        """
+        Retrieve current states.
+
+        Returns:
+            Dictionary horse logig state data
+        """
         for i, value in self.states.items():
             if value != self.previous_states[i]:
                 log("Horse Logic report",i, "Has changed", value)
                 self.previous_states[i] = value
         return self.states
 
-
     def update_analog(self, analog_input):
+        """
+        Updates reins analog states to the class.
+
+        Args:
+            analog_input: Reins analog input data in tuple
+        """
         self.reins_left = analog_input[0]
         self.reins_right = analog_input[1]
-        
 
     def get_analog_states(self):
+        """
+        Returns modified reins analog states.
+        """
         return self.reins_left, self.reins_right
 
     def reset_states(self):
+        """
+        Resets internal states.
+        """
         for key in self.states:
             self.states[key] = False
-
-
-
-
-
