@@ -6,17 +6,16 @@ import usb_hid
 from adafruit_hid.mouse import Mouse
 from debug import log
 
-
 class MouseOutput:
     def __init__(self):
         self.mouse = Mouse(usb_hid.devices)
         self.previous = 0
-        self.dead_zone = 5
+        self.dead_zone = 0
         self.current_position = 0
         self.mouse_moved = False
         self.hold_timer = 0
         self.hold_timer_started = False
-
+        self.mouse_pressed = False
         self.mouse_map = {
             "LEFT_BUTTON": Mouse.LEFT_BUTTON,
             "RIGHT_BUTTON": Mouse.RIGHT_BUTTON,
@@ -89,32 +88,32 @@ class MouseOutput:
         Move mouse cursor based on reins analog values, if Mouse Return is activated,
         cursor will return it's original position.
         """
-        movement = analog_amount[1] - analog_amount[0]
-        if hold and abs(movement) > self.dead_zone:
-            self.press(mouse_button)
+        movement =  int((analog_amount[1] - analog_amount[0])*sensitivity)
 
-        # Returns cursor to virtual zero position
-        if returning:
-            movement = self.update_axis(int(movement * sensitivity), max_distance)
-            if abs(movement) > 0:
-                self.move("X", movement, 1)
-                self.mouse_moved = True
-                self.hold_timer_started = False
-            self.previous = movement
-        else:
-            if abs(movement) > (int(self.dead_zone / 2)):
-                self.move("X", movement, sensitivity)
-                self.previous = int(movement * sensitivity)
-                self.mouse_moved = True
 
-        if hold and abs(movement) < self.dead_zone and self.mouse_moved:
+        if self.mouse_pressed and abs(movement)==0:
             if not self.hold_timer_started:
                 self.hold_timer = current_time
                 self.hold_timer_started = True
             if current_time - self.hold_timer >= 0.15:
                 self.release(mouse_button)
-                self.mouse_moved = False
+                self.mouse_pressed = False
                 self.hold_timer_started = False
+
+        if abs(movement)>0:
+            if returning:
+                movement = self.update_axis(movement, max_distance)
+            self.mouse.move(movement)
+
+            if hold and not self.mouse_pressed:
+                self.mouse_pressed = True
+                self.press(mouse_button)
+        else:
+            if self.current_position != 0:
+                self.mouse.move(self.current_position*-1)
+                self.current_position = 0
+
+
 
     def release_all(self):
         """
@@ -137,10 +136,7 @@ class MouseOutput:
         """
         Calculates new position for the cursor, this is used when "Mouse Return" is activated.
         """
-        if abs(analog_amount) < self.dead_zone:
-            target = 0
-        else:
-            target = (analog_amount * max_distance) // 512
+        target = (analog_amount * (max_distance)) // 511
         movement = target - self.current_position
         self.current_position = target
 

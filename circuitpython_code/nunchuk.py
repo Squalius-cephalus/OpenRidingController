@@ -29,9 +29,16 @@ class NunchukHandler:
         sets connection status to false if controller is not detected
         """
         try:
-            i2c = busio.I2C(board.GP1, board.GP0)
+            i2c = busio.I2C(
+    board.GP1,
+    board.GP0,
+    frequency=400000
+)
+
             log("Nunchuk controller detected")
-            self.nc = adafruit_nunchuk.Nunchuk(i2c)
+            self.nc = adafruit_nunchuk.Nunchuk(i2c,
+    i2c_read_delay=0.001
+)
             self.nunchuk_connected = True
         except Exception as e:
             log("Nunchuk not controller detected", e)
@@ -45,12 +52,14 @@ class NunchukHandler:
 
         self.nunchuk_c_released = False
         self.nunchuk_z_released = False
-
+        self.last_time = 0
         self.last_x_nunchuk = 700
         self.last_nunchuk_flick = 0
 
         self.analog_x = 0
         self.analog_y = 0
+
+        self.values = []
 
     def update(self, current_time):
         """
@@ -61,8 +70,18 @@ class NunchukHandler:
             current_time: Current monotonic timestamp.
         """
         self.states = {}
+
+        if current_time - self.last_time < 0.01:  # 100 Hz
+            return
+
+        self.last_time = current_time
+        if not self.nunchuk_connected:
+            return
         try:
+            self.values = self.nc.values
             self.states = self.handle_nunchuk() | self.detect_flick(current_time)
+            self.last_time = current_time
+       
         except OSError:
             self.nunchuk_connected = False
             self.analog_x = 0
@@ -80,9 +99,8 @@ class NunchukHandler:
             Dictionary containing button states.
         """
 
-        joystick_x, joystick_y = self.nc.joystick
-        button_c = self.nc.buttons.C
-        button_z = self.nc.buttons.Z
+        joystick_x, joystick_y = self.values[0]
+        button_c, button_z = self.values[1]
 
         deadzone = 5
         nunchuk_button_states = {
@@ -133,7 +151,7 @@ class NunchukHandler:
             "nunchuk_flick_right": False,
         }
 
-        x, y, z = self.nc.acceleration
+        x, y, z = self.values[2]
 
         flick_threshold = 450
 
@@ -146,6 +164,7 @@ class NunchukHandler:
                     log(accel_x)
                 else:
                     nunchuk_flick_states["nunchuk_flick_left"] = True
+                    log(accel_x)
                 self.last_nunchuk_flick = current_time
 
         self.last_x_nunchuk = x

@@ -72,6 +72,8 @@ class StirrupsHandler:
         self.dead_zone = 20
         self.left_stirrup = StirrupState()
         self.right_stirrup = StirrupState()
+        self.left_stirrup_value = left_stirrup_input.value
+        self.right_stirrup_value = right_stirrup_input.value
 
 
     def set_new_profile(self, settings):
@@ -87,10 +89,12 @@ class StirrupsHandler:
         """
         Updates stirrups analog values and uses those to update the states.
         """
+        
         current_time = time.monotonic()
         self.left_stirrup.clear()
         self.right_stirrup.clear()
         self.update_analog()
+         
         self.handle_stirrups(self.left_stirrup_value, current_time, self.left_stirrup)
         self.handle_stirrups(self.right_stirrup_value, current_time, self.right_stirrup)
 

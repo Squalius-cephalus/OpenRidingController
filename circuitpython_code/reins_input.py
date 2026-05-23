@@ -42,7 +42,6 @@ class ReinsHandler:
         self.pulled_threshold_low = 0
         self.pulled_threshold_rein_back = 0
         self.pulled_threshold_high = 0
-        self.reins_dead_zone = 10
         self.pulled_time_threshold = 0.35
 
         self.internal_states = {
@@ -50,6 +49,10 @@ class ReinsHandler:
             "reins_timer_on": False,
             "reins_pulled": False,
         }
+
+        self.reins_timer_started = False
+        self.reins_pulled = False
+        self.reins_timer = 0.0
 
     def set_new_profile(self, settings):
         """
@@ -69,15 +72,29 @@ class ReinsHandler:
         current_time = time.monotonic()
         self.reset_states()
         self.update_analog()
+        combined_value = self.left_input+self.right_input
 
-        # is reins pulled?
-        if (
-            self.right_input > self.reins_dead_zone
-            and self.left_input > self.reins_dead_zone
-        ):
-            if self.internal_states["reins_timer_on"] is False:
-                self.internal_states["reins_pulled_time"] = current_time
-                self.internal_states["reins_timer_on"] = True
+        if combined_value >= self.pulled_threshold_high*2:
+            self.states["reins_pulled_back"] = True
+            self.left_input = 0
+            self.right_input = 0
+            log("Stop! Reins pulled back! Horse, stop now!")
+            return
+
+        if self.left_input >0 and self.right_input > 0 and not self.reins_timer_started:
+            self.reins_timer = current_time
+            self.reins_timer_started = True
+
+        if self.left_input >= self.pulled_threshold_low and self.right_input >= self.pulled_threshold_low:
+            self.reins_pulled = True
+
+        if combined_value == 0 and self.reins_timer_started:
+            if self.reins_pulled:
+                self.reins_timer_started = False
+                self.reins_pulled = False
+                if current_time-self.reins_timer <= 0.35:
+                    log("Success! Reins pulled! Horse, slow down")
+                    self.states["reins_pulled"] = True
 
         if (
             self.right_input > self.pulled_threshold_rein_back
@@ -85,34 +102,6 @@ class ReinsHandler:
         ):
             self.states["reins_pulled_currently"] = True
 
-        if (
-            self.left_input >= self.pulled_threshold_low
-            and self.right_input >= self.pulled_threshold_low
-        ):
-            self.internal_states["reins_pulled"] = True
-
-        # How fast reins have been pulled?
-        if (
-            self.right_input + self.left_input < self.reins_dead_zone
-            and self.internal_states["reins_timer_on"]
-        ):
-            if self.internal_states["reins_pulled"] is True:
-                time_taken = current_time - self.internal_states["reins_pulled_time"]
-                if self.pulled_time_threshold > time_taken:
-                    log("Success! Reins pulled! Horse, slow down")
-                    self.states["reins_pulled"] = True
-                self.internal_states["reins_pulled"] = False
-            self.internal_states["reins_timer_on"] = False
-
-        # Reins pulled back far, stop that horse!
-        if (
-            self.left_input >= self.pulled_threshold_high
-            and self.right_input >= self.pulled_threshold_high
-        ):
-            self.internal_states["reins_pulled"] = False
-            self.states["reins_pulled_back"] = True
-            self.left_input = 0
-            self.right_input = 0
 
     def update_analog(self):
         """
