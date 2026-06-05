@@ -8,6 +8,8 @@ Currently the controller can emulate keyboard, mouse and DirectInput controller,
 
 <img width="1429" height="1000" alt="OpenRidingController rev.1" src="https://github.com/user-attachments/assets/75da6f77-70de-4591-b435-3efd1ffd7ecb" />
 
+## Video
+[![Video about the project](http://img.youtube.com/vi/zyoOwf0pp80/0.jpg)](http://www.youtube.com/watch?v=zyoOwf0pp80 "OpenRidingController")
 
 ## Hardware Required
 
@@ -26,8 +28,3 @@ Currently the controller can emulate keyboard, mouse and DirectInput controller,
 ## Circuit Diagram
 <img width="1500" height="749" alt="circuit_diagram" src="https://github.com/user-attachments/assets/bce18d3e-5612-4eaf-a589-6673e27abf7a" />
 
-
-
-**TODO:** 
-Add pictures
-Add guide how to use
