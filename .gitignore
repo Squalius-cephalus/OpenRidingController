@@ -1,3 +1,6 @@
 .DS_Store
 circuitpython_code/.vscode/settings.json
 circuitpython_code/lib/
+circuitpython_code/rev2/boot_out.txt
+/circuitpython_code/rev2/lib
+circuitpython_code/rev2/settings.toml
