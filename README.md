@@ -1,10 +1,15 @@
 # OpenRidingController
-
 A horse riding game controller for the PC/Mac. The idea is to emulate basic horse riding behaviors and converts those to work a variety of video games.
 
 The controller mainly uses **RP2040 Zero**, **TCRT5000** IR modules and 3D printed parts. Code uses **[CircuitPython 10](https://circuitpython.org/board/waveshare_rp2040_zero/)** for fast prototyping, later revisions may move to Arduino C or something similar.
 
 Currently the controller can emulate keyboard, mouse and DirectInput controller, however, this wont work on any "keyboard to game console" adapter, because of how the USB composite system works.
+## Revision 2
+Latest revision uses a PCB, and the goal is to minimize the number of 3D printed parts. Strirrups uses an IMU sensors, so controller can be adapted to different frames easily.
+
+
+## Revision 1
+Handwired design, frame, sensors etc uses many 3D printed parts. Not in active develoment. 
 
 <img width="1429" height="1000" alt="OpenRidingController rev.1" src="https://github.com/user-attachments/assets/75da6f77-70de-4591-b435-3efd1ffd7ecb" />
 
