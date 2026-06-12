@@ -7,11 +7,14 @@ Currently the controller can emulate keyboard, mouse and DirectInput controller,
 ## Revision 2
 Latest revision uses a PCB, and the goal is to minimize the number of 3D printed parts. Strirrups uses an IMU sensors, so controller can be adapted to different frames easily.
 
+<img width="1280" alt="OpenRidingController rev.2" src="https://github.com/user-attachments/assets/84d36122-f2f4-45a9-b111-d2c44c6b3fa4" />
+
+Build guide and BOM in the works.
 
 ## Revision 1
 Handwired design, frame, sensors etc uses many 3D printed parts. Not in active develoment. 
 
-<img width="1429" height="1000" alt="OpenRidingController rev.1" src="https://github.com/user-attachments/assets/75da6f77-70de-4591-b435-3efd1ffd7ecb" />
+<img width="1280"  alt="OpenRidingController rev.1" src="https://github.com/user-attachments/assets/75da6f77-70de-4591-b435-3efd1ffd7ecb" />
 
 ## Video
 [![Video about the project](http://img.youtube.com/vi/zyoOwf0pp80/0.jpg)](http://www.youtube.com/watch?v=zyoOwf0pp80 "OpenRidingController")
